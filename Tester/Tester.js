@@ -4,13 +4,17 @@ class Tester extends Phaser.Scene{
         super({key:'Tester'})
     }
 
+    preload(){
+        this.load.image('battleship','sprites/Battleship.png');
+    }
+
     create(){
         //plotting the grid
-        const gridx = 90;
-        const gridy = 60;
+        const gridx = 86;
+        const gridy = 56;
         for(let i = 0; i<10;i++){
             for(let j = 0; j < 10; j++){
-                const rectangle = this.add.rectangle(gridx+i*30,gridy+j*30,30,30,0xffffff);
+                const rectangle = this.add.rectangle(gridx+i*30,gridy+j*30,30,30,0xffffff).setOrigin(0,0);
                 rectangle.setStrokeStyle(2,0x000000);
                 //creating the functionality of the squares
                 rectangle.setInteractive();
@@ -23,19 +27,25 @@ class Tester extends Phaser.Scene{
                 });
                 rectangle.on('pointerdown',function()
                 {
-                    this.add.circle(rectangle.x,rectangle.y,10,0xff0000).setStrokeStyle(1,0x000000);
+                    this.add.circle(rectangle.x+10,rectangle.y+10,10,0xff0000).setStrokeStyle(1,0x000000).setOrigin(0,0);
                 },this);
             }
         }
         for(let i = 0; i<10; i++){
-            this.add.text(gridx-40/3,i*30+gridy,String(i+1), {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
+            this.add.text(gridx+1,i*30+gridy+15,String(i+1), {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
         }
         const letters = ['a','b','c','d','e','f','g','h','i','j']
         for(let i = 0; i<10; i++){
-            this.add.text(i*30+gridx+5,gridy-16,letters[i], {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
+            this.add.text(i*30+gridx+22,gridy-1,letters[i], {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
         }
 
-        const battleship = this.add.circle(400,270,10,0xff0000).setStrokeStyle(1,0x000000);
+
+        //for(let i = 0; i < 4; i++){
+        //    this.add.circle(400,270 - i * 30,10,0xff0000).setStrokeStyle(1,0x000000);
+        //}
+        
+        const battleship = this.add.sprite(90,60,'battleship');
+        battleship.setOrigin(0,0);
         battleship.setInteractive();
         this.input.setDraggable(battleship);
         this.input.on('drag',function(pointer,target,dragX,dragY){
