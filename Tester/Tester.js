@@ -23,7 +23,7 @@ class Tester extends Phaser.Scene{
                 });
                 rectangle.on('pointerdown',function()
                 {
-                    this.add.circle(rectangle.x,rectangle.y,6,0xff0000).setStrokeStyle(1,0x000000);
+                    this.add.circle(rectangle.x,rectangle.y,10,0xff0000).setStrokeStyle(1,0x000000);
                 },this);
             }
         }
@@ -35,26 +35,28 @@ class Tester extends Phaser.Scene{
             this.add.text(i*30+gridx+5,gridy-16,letters[i], {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
         }
 
-        const battleship = this.add.circle(400,300,6,0xff0000).setStrokeStyle(1,0x000000);
+        const battleship = this.add.circle(400,300,10,0xff0000).setStrokeStyle(1,0x000000);
         battleship.setInteractive();
-        this.input.on('pointerdown',this.startDrag,this);
+        battleship.on('drag',function(pointer, dragX, dragY) {
+          this.x = dragX;
+          this.y = dragY;
+        });
     }
 
-    startDrag(pointer,targets){
-        this.input.off('pointerdown',this.startDrag,this);
-        this.dragObject = targets[0];
-        this.input.on('pointermove',this.doDrag,this);
-        this.input.on('pointerup',this.stopDrag,this);
+    startDrag(pointer,target){
+        target.off('pointerdown',this.startDrag,this);
+        target.on('pointermove',this.doDrag(pointer,target),this);
+        target.on('pointerup',this.stopDrag(target),this);
     }
 
-    doDrag(pointer){
-        this.dragObject.x = pointer.x;
-        this.dragObject.y = pointer.y;
+    doDrag(pointer,dragX,dragY){
+        this.x = dragX;
+        this.y = dragY;
     }
 
-    stopDrag(){
-        this.input.on('pointerdown',this.startDrag,this);
-        this.input.off('pointermove',this.doDrag,this);
-        this.input.off('pointerup',this.stopDrag,this);
+    stopDrag(target){
+        target.on('pointerdown',this.startDrag,this);
+        target.off('pointermove',this.doDrag,this);
+        target.off('pointerup',this.stopDrag,this);
     }
 }
