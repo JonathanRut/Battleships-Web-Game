@@ -35,11 +35,12 @@ class Tester extends Phaser.Scene{
             this.add.text(i*30+gridx+5,gridy-16,letters[i], {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
         }
 
-        const battleship = this.add.circle(400,300,10,0xff0000).setStrokeStyle(1,0x000000);
+        const battleship = this.add.circle(400,270,10,0xff0000).setStrokeStyle(1,0x000000);
         battleship.setInteractive();
-        battleship.on('drag',function(pointer, dragX, dragY) {
-          this.x = dragX;
-          this.y = dragY;
+        this.input.setDraggable(battleship);
+        this.input.on('drag',function(pointer,target,dragX,dragY){
+            target.x = dragX - dragX % 30;
+            target.y = dragY - dragY % 30;
         });
     }
 
