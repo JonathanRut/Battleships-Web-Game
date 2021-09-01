@@ -53,21 +53,4 @@ class Tester extends Phaser.Scene{
             target.y = dragY - dragY % 30;
         });
     }
-
-    startDrag(pointer,target){
-        target.off('pointerdown',this.startDrag,this);
-        target.on('pointermove',this.doDrag(pointer,target),this);
-        target.on('pointerup',this.stopDrag(target),this);
-    }
-
-    doDrag(pointer,dragX,dragY){
-        this.x = dragX;
-        this.y = dragY;
-    }
-
-    stopDrag(target){
-        target.on('pointerdown',this.startDrag,this);
-        target.off('pointermove',this.doDrag,this);
-        target.off('pointerup',this.stopDrag,this);
-    }
 }
