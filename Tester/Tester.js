@@ -47,15 +47,26 @@ class Tester extends Phaser.Scene{
         this.input.setDraggable(battleship);
 
         this.input.on('drag',function(pointer,target,dragX,dragY){
-            target.x = dragX - dragX % 30;
-            target.y = dragY - dragY % 30;
-            for(let i = 0; i < target.height/27-(target.height%27)/27; i++){
-                grid[((target.y - gridy - 4)/30) + i][(target.x - gridx - 4)/30].setFillStyle(0xd0d0d0);
-                console.log((target.x - gridx - 4)/30);
-                //console.log(grid[(target.y - gridy)/30 + i][(target.x - gridx)/30]);
-                
+            if(target.x !== dragX - dragX % 30 || target.y !== dragY - dragY % 30){
+                for(let i = 0; i < target.height/27-(target.height%27)/27; i++){
+                    try{
+                        grid[((target.y - gridy - 4)/30) + i][(target.x - gridx - 4)/30].setFillStyle(0xffffff);
+                    }
+                    catch{
+                        continue;
+                    }
+                }
+                target.x = dragX - dragX % 30;
+                target.y = dragY - dragY % 30;
+                for(let i = 0; i < target.height/27-(target.height%27)/27; i++){
+                    try{
+                        grid[((target.y - gridy - 4)/30) + i][(target.x - gridx - 4)/30].setFillStyle(0xd0d0d0);
+                    }
+                    catch{
+                        continue;
+                    }
+                }
             }
-            console.log("break");
         });
         
     }
