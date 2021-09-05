@@ -46,6 +46,7 @@ class Tester extends Phaser.Scene{
         this.battleship = this.add.sprite(90,60,'battleship-ver');
         this.battleship.setOrigin(0,0);
 
+
         //battleship.angle += 90;
         //let temp = battleship.height;
         //battleship.height = battleship.width;
@@ -53,8 +54,12 @@ class Tester extends Phaser.Scene{
 
         //Only vertical ships??
 
+        
         this.battleship.setInteractive();
-        this.input.setDraggable(this.battleship);
+        this.input.setDraggable(this.battleship, true);
+
+        //_draggable doesn't need to be reset
+        
 
         this.input.on('drag',function(pointer,target,dragX,dragY){
             if(target.x !== dragX - dragX % 30 || target.y !== dragY - dragY % 30){
@@ -63,6 +68,7 @@ class Tester extends Phaser.Scene{
                 target.y = dragY - dragY % 30;
                 this.updateOverlayColour(target,0xd0d0d0);
                 target.justDragged = true;
+                console.log(this.battleship.input.hitArea);
             }
         },this);
 
@@ -71,6 +77,8 @@ class Tester extends Phaser.Scene{
                 this.battleship.justDragged = false;
             }
             else{
+                //Need to change hit area manually
+
                 this.updateOverlayColour(this.battleship,0xffffff);
                 if(this.battleship.texture.key === 'battleship-ver'){
                     this.battleship.setTexture('battleship-hor');
@@ -78,6 +86,9 @@ class Tester extends Phaser.Scene{
                 else{
                     this.battleship.setTexture('battleship-ver');
                 }
+                let temp = this.battleship.input.hitArea.height;
+                this.battleship.input.hitArea.height = this.battleship.input.hitArea.width;
+                this.battleship.input.hitArea.width = temp;
                 this.updateOverlayColour(this.battleship,0xd0d0d0);
             }
         },this);
