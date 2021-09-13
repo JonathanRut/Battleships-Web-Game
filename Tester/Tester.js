@@ -7,6 +7,8 @@ class Tester extends Phaser.Scene{
     preload(){
         this.load.image('battleship-ver','sprites/Battleship-ver.png');
         this.load.image('battleship-hor','sprites/Battleship-hor.png');
+        this.load.image('carrier-hor','sprites/Carrier-hor.png');
+        this.load.image('carrier-ver','sprites/Carrier-ver.png')
     }
 
     create(){
@@ -21,15 +23,6 @@ class Tester extends Phaser.Scene{
             for(let j = 0; j < 10; j++){
                 const rectangle = this.add.rectangle(this.gridx+j*30,this.gridy+i*30,30,30,0xffffff).setOrigin(0,0);
                 rectangle.setStrokeStyle(2,0x000000);
-                //creating the functionality of the squares
-                rectangle.setInteractive();
-                //rectangle.on('pointerover',function(){
-                //    rectangle.setFillStyle(0xd0d0d0);
-                //});
-                //rectangle.on('pointerout',function()
-                //{
-                //    rectangle.setFillStyle(0xffffff);
-                //});
                 this.grid[i].push(rectangle);
             }
         }
@@ -45,7 +38,8 @@ class Tester extends Phaser.Scene{
 
         this.battleship = this.add.sprite(90,60,'battleship-ver');
         this.battleship.setOrigin(0,0);
-
+        this.carrier = this.add.sprite(60,60,'carrier-ver');
+        this.carrier.setOrigin(0,0);
 
         //battleship.angle += 90;
         //let temp = battleship.height;
@@ -57,9 +51,9 @@ class Tester extends Phaser.Scene{
         
         this.battleship.setInteractive();
         this.input.setDraggable(this.battleship, true);
+        this.carrier.setInteractive();
+        this.input.setDraggable(this.carrier, true);
 
-        //_draggable doesn't need to be reset
-        
 
         this.input.on('drag',function(pointer,target,dragX,dragY){
             if(target.x !== dragX - dragX % 30 || target.y !== dragY - dragY % 30){
@@ -93,7 +87,7 @@ class Tester extends Phaser.Scene{
         // }
 
         this.battleship.on('pointerup',function(){this.flipShip(this.battleship,'battleship-hor','battleship-ver')},this);
-        
+        this.carrier.on('pointerup',function(){this.flipShip(this.carrier,'carrier-hor','carrier-ver')},this);        
     }
 
     updateOverlayColour(target,colour){
