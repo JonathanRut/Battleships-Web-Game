@@ -68,30 +68,31 @@ class Tester extends Phaser.Scene{
                 target.y = dragY - dragY % 30;
                 this.updateOverlayColour(target,0xd0d0d0);
                 target.justDragged = true;
-                console.log(this.battleship.input.hitArea);
             }
         },this);
 
-        this.battleship.on('pointerup',function(){
-            if(this.battleship.justDragged){
-                this.battleship.justDragged = false;
-            }
-            else{
-                //Need to change hit area manually
+        // this.battleship.flipShip = function(){
+        //     if(this.battleship.justDragged){
+        //         this.battleship.justDragged = false;
+        //     }
+        //     else{
+        //         //Need to change hit area manually
 
-                this.updateOverlayColour(this.battleship,0xffffff);
-                if(this.battleship.texture.key === 'battleship-ver'){
-                    this.battleship.setTexture('battleship-hor');
-                }
-                else{
-                    this.battleship.setTexture('battleship-ver');
-                }
-                let temp = this.battleship.input.hitArea.height;
-                this.battleship.input.hitArea.height = this.battleship.input.hitArea.width;
-                this.battleship.input.hitArea.width = temp;
-                this.updateOverlayColour(this.battleship,0xd0d0d0);
-            }
-        },this);
+        //         this.updateOverlayColour(this.battleship,0xffffff);
+        //         if(this.battleship.texture.key === 'battleship-ver'){
+        //             this.battleship.setTexture('battleship-hor');
+        //         }
+        //         else{
+        //             this.battleship.setTexture('battleship-ver');
+        //         }
+        //         let temp = this.battleship.input.hitArea.height;
+        //         this.battleship.input.hitArea.height = this.battleship.input.hitArea.width;
+        //         this.battleship.input.hitArea.width = temp;
+        //         this.updateOverlayColour(this.battleship,0xd0d0d0);
+        //     }
+        // }
+
+        this.battleship.on('pointerup',function(){this.flipShip(this.battleship,'battleship-hor','battleship-ver')},this);
         
     }
 
@@ -105,6 +106,27 @@ class Tester extends Phaser.Scene{
                     continue;
                 }
             }
+        }
+    }
+
+    flipShip = function(target,horKey,verKey){
+        if(target.justDragged){
+            target.justDragged = false;
+        }
+        else{
+            //Need to change hit area manually
+
+            this.updateOverlayColour(target,0xffffff);
+            if(target.texture.key === verKey){
+                target.setTexture(horKey);
+            }
+            else{
+                target.setTexture(verKey);
+            }
+            let temp = target.input.hitArea.height;
+            target.input.hitArea.height = target.input.hitArea.width;
+            target.input.hitArea.width = temp;
+            this.updateOverlayColour(target,0xd0d0d0);
         }
     }
 }
