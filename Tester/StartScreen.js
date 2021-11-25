@@ -14,6 +14,8 @@ class StartScreen extends Phaser.Scene{
             this.scene.stop('StartScreen');
             this.scene.start('Tester');
         },this);
+        this.scene.stop('StartScreen');
+        this.scene.start('Tester');
 
     }
 }
