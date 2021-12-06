@@ -12,10 +12,10 @@ class StartScreen extends Phaser.Scene{
         rectangle.setInteractive();
         rectangle.on('pointerdown', function(){
             this.scene.stop('StartScreen');
-            this.scene.start('Tester');
+            this.scene.start('FleetPlace');
         },this);
-        this.scene.stop('StartScreen');
-        this.scene.start('Tester');
+        // this.scene.stop('StartScreen');
+        // this.scene.start('Tester');
 
     }
 }

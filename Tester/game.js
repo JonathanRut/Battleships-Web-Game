@@ -5,7 +5,12 @@ const config = {
     backgroundColor: 0xffffff,
     width: 960,
     height: 540,
-    scene: [StartScreen,Tester]
+    // width: 1200,
+    // height: 1000,
+    dom: {
+        createContainer: true
+    },
+    scene: [StartScreen, FleetPlace]
 }
 
 

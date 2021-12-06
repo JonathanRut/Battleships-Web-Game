@@ -17,8 +17,8 @@ class MovingShips
             let randomX
             do
             {
-                randomX = Math.floor(10 * Math.random());
-                randomY = Math.floor(10 * Math.random());
+                randomX = Math.floor(this.scene.width * Math.random());
+                randomY = Math.floor(this.scene.height * Math.random());
                 origin.x = this.scene.gridx + 4 + 30 * randomX;
                 origin.y = this.scene.gridy + 4 + 30 * randomY;
                 this.rotation = (Math.floor(Math.random() * 10) % 2) === 0 ? "ver":"hor";
@@ -100,7 +100,7 @@ class MovingShips
         const newX = this.shipParts[lastship].x + (this.rotation === "ver" ? 0:30);
         const newY = this.shipParts[lastship].y + (this.rotation === "ver" ? 30:0);
         // This if statement checks to see if you are trying to add a ship outside the grid  
-        if((newX - this.scene.gridx - 4)/30 > this.scene.width - 1 || (newY - this.scene.gridy - 4)/30 > this.scene.height - 1)
+        if((newX - this.scene.gridx - 4)/30 > this.scene.width - 1 || (newY - this.scene.gridy - 4)/30 > this.scene.height - 1 || (newY - this.scene.gridy - 4)/30 < 0 || (newX - this.scene.gridx - 4)/30 < 0)
         {
             return false;
         }
@@ -271,7 +271,9 @@ class MovingShips
             {
                 if(this.scene.grid[i][j].borders.length > 0)
                 {
-                    line += this.scene.grid[i][j].borders.length + "|";
+                    //line += this.scene.grid[i][j].borders.length   + "|";
+                    line +=  "X|"
+                    // line += " |"
                 }
                 else if(this.scene.grid[i][j].ships.length > 0)
                 {
