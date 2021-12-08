@@ -17,12 +17,12 @@ class MovingShips
             let randomX
             do
             {
-                randomX = Math.floor(this.scene.width * Math.random());
-                randomY = Math.floor(this.scene.height * Math.random());
-                origin.x = this.scene.gridx + 4 + 30 * randomX;
-                origin.y = this.scene.gridy + 4 + 30 * randomY;
+                randomX = Math.floor(this.scene.board.width * Math.random());
+                randomY = Math.floor(this.scene.board.height * Math.random());
+                origin.x = this.scene.board.origin.x + 4 + 30 * randomX;
+                origin.y = this.scene.board.origin.y + 4 + 30 * randomY;
                 this.rotation = (Math.floor(Math.random() * 10) % 2) === 0 ? "ver":"hor";
-            }while(this.scene.grid[randomY][randomX].borders.length > 0 || this.scene.grid[randomY][randomX].ships.length > 0)
+            }while(this.scene.board.grid[randomY][randomX].borders.length > 0 || this.scene.board.grid[randomY][randomX].ships.length > 0)
         }
 
         // The top of the ship and the plus and minus buttons are created
@@ -51,14 +51,14 @@ class MovingShips
         while(this.shipParts.length < length + 2)
         {
             this.scene.ships.forEach(ship => {
-                ship.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+                ship.UpdateShipCells(false);
             }); 
-            this.UpdateShipCells(0xa0a0a0,0xd0d0d0);
-            if(!this.AddLength() || this.scene.grid[(top.y - 4 - this.scene.gridy)/30][(top.x - 4 - this.scene.gridx)/30].borders.length > 0 || this.scene.grid[(top.y - 4 - this.scene.gridy)/30][(top.x - 4 - this.scene.gridx)/30].ships.length > 1)
+            this.UpdateShipCells(false);
+            if(!this.AddLength() || this.scene.board.grid[(top.y - 4 - this.scene.board.origin.y)/30][(top.x - 4 - this.scene.board.origin.x)/30].borders.length > 0 || this.scene.board.grid[(top.y - 4 - this.scene.board.origin.y)/30][(top.x - 4 - this.scene.board.origin.x)/30].ships.length > 1)
             {
-                this.UpdateShipCells(0xffffff,0xffffff);
-                top.x = this.scene.gridx + 4 + 30 * Math.floor(10 * Math.random());
-                top.y = this.scene.gridy + 4 + 30 * Math.floor(10 * Math.random());
+                this.UpdateShipCells(true);
+                top.x = this.scene.board.origin.x + 4 + 30 * Math.floor(10 * Math.random());
+                top.y = this.scene.board.origin.y + 4 + 30 * Math.floor(10 * Math.random());
                 plusButton.x = top.x - 10;
                 plusButton.y = top.y;
                 minusButton.x = top.x - 10;
@@ -71,7 +71,7 @@ class MovingShips
                 } 
             }
         }
-        this.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+        this.UpdateShipCells(false);
     }
 
     NewPart(origin, index)
@@ -100,12 +100,12 @@ class MovingShips
         const newX = this.shipParts[lastship].x + (this.rotation === "ver" ? 0:30);
         const newY = this.shipParts[lastship].y + (this.rotation === "ver" ? 30:0);
         // This if statement checks to see if you are trying to add a ship outside the grid  
-        if((newX - this.scene.gridx - 4)/30 > this.scene.width - 1 || (newY - this.scene.gridy - 4)/30 > this.scene.height - 1 || (newY - this.scene.gridy - 4)/30 < 0 || (newX - this.scene.gridx - 4)/30 < 0)
+        if((newX - this.scene.board.origin.x - 4)/30 > this.scene.board.width - 1 || (newY - this.scene.board.origin.y - 4)/30 > this.scene.board.height - 1 || (newY - this.scene.board.origin.y - 4)/30 < 0 || (newX - this.scene.board.origin.x - 4)/30 < 0)
         {
             return false;
         }
         // This if statement checks to see if you are trying to add length into another ships border
-        if(this.scene.grid[(newY - this.scene.gridy - 4)/30][(newX - this.scene.gridx - 4)/30].borders.length > 1)
+        if(this.scene.board.grid[(newY - this.scene.board.origin.y - 4)/30][(newX - this.scene.board.origin.x - 4)/30].borders.length > 1)
         {
             return false;
         }
@@ -113,7 +113,7 @@ class MovingShips
         const newPart = this.NewPart({x:newX,y:newY},this.shipParts.length);
         this.shipParts.push(newPart);
         // The cells which the ship is on are updated
-        this.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+        this.UpdateShipCells(false);
         return true;
     }
 
@@ -123,13 +123,13 @@ class MovingShips
         if(this.shipParts.length > 3)
         {
             // This sets the current cells of the ship to empty
-            this.UpdateShipCells(0xffffff,0xffffff);
+            this.UpdateShipCells(true);
             // The part you are removing is removed from the array and destroyed
             const deletedShip = this.shipParts.pop();
             deletedShip.destroy();
             // Every ship on the board is updated to count for overlaps
             this.scene.ships.forEach(ship => {
-                ship.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+                ship.UpdateShipCells(false);
             });
         }
     }
@@ -163,7 +163,7 @@ class MovingShips
             }
             // Finally every ship on the board is updated to avoid collisions
             this.scene.ships.forEach(ship => {
-                ship.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+                ship.UpdateShipCells(false);
             });
         }
     }
@@ -179,21 +179,21 @@ class MovingShips
             distances.push({x:xdistance,y:ydistance});
         }
         // The current cells which the ship is in get marked as empty
-        this.UpdateShipCells(0xffffff,0xffffff);
+        this.UpdateShipCells(true);
 
         // The for loop here checks to see if the ship is trying to be dragged somewhere illegal
         for(let i = 2; i < this.shipParts.length; i++)
         {
             // The new position is calculated
-            let newXGridPos = ((dragCoords.x + distances[i].x) - this.scene.gridx - 4)/30;
-            let newYGridPos = ((dragCoords.y + distances[i].y) - this.scene.gridy - 4)/30;
+            let newXGridPos = ((dragCoords.x + distances[i].x) - this.scene.board.origin.x - 4)/30;
+            let newYGridPos = ((dragCoords.y + distances[i].y) - this.scene.board.origin.y - 4)/30;
             // This if statement checks to see if the ship is being dragged out of the grid
-            if(newXGridPos < 0 || newXGridPos > this.scene.width - 1 || newYGridPos < 0 || newYGridPos > this.scene.height - 1)
+            if(newXGridPos < 0 || newXGridPos > this.scene.board.width - 1 || newYGridPos < 0 || newYGridPos > this.scene.board.height - 1)
             {
                 return;
             }
             // This if statement checks to see if you are trying to drag a ship onto another ship
-            if(this.scene.grid[newYGridPos][newXGridPos].borders.length > 0 || this.scene.grid[newYGridPos][newXGridPos].ships.length > 0)
+            if(this.scene.board.grid[newYGridPos][newXGridPos].borders.length > 0 || this.scene.board.grid[newYGridPos][newXGridPos].ships.length > 0)
             {
                 return;
             }
@@ -206,89 +206,92 @@ class MovingShips
         }
     }
 
-    UpdateShipCells(shipColour,borderColour)
+    UpdateShipCells(leaving)
     {
         // First the grid position of the top part is found and saved
-        const originGridPosX = ((this.shipParts[2].x - this.scene.gridx - 4)/30);
-        const originGridPosY = ((this.shipParts[2].y - this.scene.gridy - 4)/30);
+        const originGridPosX = ((this.shipParts[2].x - this.scene.board.origin.x - 4)/30);
+        const originGridPosY = ((this.shipParts[2].y - this.scene.board.origin.y - 4)/30);
         // This nested for loop places the border for the ship
         for(let i = -1; i < this.shipParts.length - 1; i++)
         {
             for(let j = -1; j < 2; j++)
             {
                 // A try and catch statement is used to catch errors to trying to access a cell outside the grid
+                let cell;
                 try
                 {
-                    // The cell of the border is found and colour is set
-                    const rectangle =  this.scene.grid[originGridPosY + (this.rotation === "ver" ? i:j)][originGridPosX +  (this.rotation === "ver" ? j:i)];
-                    rectangle.setFillStyle(borderColour);
+                    // The cell of the border is found
+                    cell =  this.scene.board.grid[originGridPosY + (this.rotation === "ver" ? i:j)][originGridPosX +  (this.rotation === "ver" ? j:i)];
                     // If you are trying to set the border to empty the ship is removed from the array containing the ships that border the cell
-                    if (borderColour === 0xffffff)
+                    if (leaving)
                     {
-                        const index = rectangle.borders.indexOf(this)
-                        rectangle.borders.splice(index,1);
+                        const index = cell.borders.indexOf(this)
+                        cell.borders.splice(index,1);
                     }
                     // If the the ship isn't in the array containing the ship that border the cell it is added
-                    else if (rectangle.borders.indexOf(this) === -1)
+                    else if (cell.borders.indexOf(this) === -1)
                     {
-                        rectangle.borders.push(this);
+                        cell.borders.push(this);
                     }
+                    
                 }
                 catch{continue;}
+                cell.showCell();
             }
         }
         // This for loop updates the cells containing the ship 
         for(let i = 0; i < this.shipParts.length - 2; i++)
         {
             // The try and catch tries to access the cells which the ship is in and catches if it fails
+            let cell;
             try
             {
                 // A cell that the ship is found and stored in a constant
-                const rectangle =  this.scene.grid[originGridPosY + (this.rotation === "ver" ? i:0)][originGridPosX +  (this.rotation === "ver" ? 0:i)];
-                // The shade of the cell is updated
-                rectangle.setFillStyle(shipColour);
+                cell =  this.scene.board.grid[originGridPosY + (this.rotation === "ver" ? i:0)][originGridPosX +  (this.rotation === "ver" ? 0:i)];
                 // If the cell is trying to be set to empty the ship is removed from array containing the cells ships
-                if (shipColour === 0xffffff)
+                if (leaving)
                 {
-                    const index = rectangle.ships.indexOf(this)
-                    rectangle.ships.splice(index,1);
+                    const index = cell.ships.indexOf(this)
+                    cell.ships.splice(index,1);
                 }
                 // Otherwise the ship is added to the cell's ship array
-                else if (rectangle.ships.indexOf(this) === -1)
+                else if (cell.ships.indexOf(this) === -1)
                 {
-                    rectangle.ships.push(this);
+                    cell.ships.push(this);
                 }
                 // Finally the ship is removed from the cells border array as the cell contains a ship not a border
-                const index = rectangle.borders.indexOf(this);
-                rectangle.borders.splice(index,1);                
+                const index = cell.borders.indexOf(this);
+                cell.borders.splice(index,1); 
+                            
             }
             catch{continue;}
+            cell.showCell();  
         }
-        for(let i = 0; i < this.scene.height; i++)
-        {
-            let line = i + "|";
-            for(let j = 0; j < this.scene.width; j++)
-            {
-                if(this.scene.grid[i][j].borders.length > 0)
-                {
-                    //line += this.scene.grid[i][j].borders.length   + "|";
-                    line +=  "X|"
-                    // line += " |"
-                }
-                else if(this.scene.grid[i][j].ships.length > 0)
-                {
-                    line += "O|"
-                }
-                else{line += " |"}
-            }
-            console.log(line)
-        }
-        console.log("end");
+        // for(let i = 0; i < this.scene.board.height; i++)
+        // {
+        //     let line = i + "|";
+        //     for(let j = 0; j < this.scene.board.width; j++)
+        //     {
+        //         if(this.scene.board.grid[i][j].borders.length > 0)
+        //         {
+        //             //line += this.scene.board.grid[i][j].borders.length   + "|";
+        //             line +=  "X|"
+        //             // line += " |"
+        //         }
+        //         else if(this.scene.board.grid[i][j].ships.length > 0)
+        //         {
+        //             line += "O|"
+        //         }
+        //         else{line += " |"}
+        //     }
+        //     console.log(line)
+        // }
+        // console.log("end");
     }
 
     destroy()
     {
-        this.UpdateShipCells(0xffffff,0xffffff);
+        this.UpdateShipCells(true);
         this.shipParts.forEach(part => part.destroy());
     }
 }

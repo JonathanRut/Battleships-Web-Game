@@ -10,7 +10,7 @@ const config = {
     dom: {
         createContainer: true
     },
-    scene: [StartScreen, FleetPlace]
+    scene: [StartScreen, FleetPlace, MainGame]
 }
 
 

@@ -12,48 +12,24 @@ class FleetPlace extends Phaser.Scene{
     }
 
     create(){
-        // Plotting the grid
-        this.gridx = 116;
-        this.gridy = 56;
-        this.width = 10;
-        this.height = 10;
-        this.grid = [];
-
-        for(let i = 0; i<this.height;i++){
-            // Making 2D array of the cells
-            this.grid.push([]);
-            for(let j = 0; j < this.width; j++){
-                const rectangle = this.add.rectangle(this.gridx+j*30,this.gridy+i*30,30,30,0xffffff).setOrigin(0,0);
-                rectangle.setStrokeStyle(2,0x000000);
-                rectangle.borders = [];
-                rectangle.ships = [];
-                this.grid[i].push(rectangle);
-            }
-        }
-
-        // Adding the letters and numbers to cells
-        for(let i = 0; i<this.height; i++){
-            this.add.text(this.gridx+1,i*30+this.gridy+15,String(i+1), {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
-        }
-        const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-        for(let i = 0; i<this.width; i++){
-            this.add.text(i*30+this.gridx+22,this.gridy-1,letters[i], {fontFamily:'Arial' ,fontSize:'12px', fill:'#000000'});
-        }
-
+        
+        this.board = new Board({x:116,y:56},{width:10,height:10},PlacementCell,this);
+        
         this.ships = [];
         this.CreateFleet();
 
-        let shipCreate = this.add.dom(this.gridx + this.width * 30 + 10, this.gridy).createFromCache('createShip').setOrigin(0,0);
-        shipCreate.getChildByName("length").setAttribute("max",this.width >= this.height ? this.width:this.height);
-        shipCreate.getChildByName("row").setAttribute("max",this.height);
-        shipCreate.getChildByName("column").setAttribute("pattern","[a-"+letters[this.width-1]+"A-"+letters[this.width-1].toUpperCase()+"]{1}");
+        const letters = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+        let shipCreate = this.add.dom(this.board.origin.x + this.board.width * 30 + 10, this.board.origin.y).createFromCache('createShip').setOrigin(0,0);
+        shipCreate.getChildByName("length").setAttribute("max",this.board.width >= this.board.height ? this.board.width:this.board.height);
+        shipCreate.getChildByName("row").setAttribute("max",this.board.height);
+        shipCreate.getChildByName("column").setAttribute("pattern","[a-"+letters[this.board.width-1]+"A-"+letters[this.board.width-1].toUpperCase()+"]{1}");
         document.getElementById("form").addEventListener("submit",(event)=>{
             event.preventDefault();
             const name = shipCreate.getChildByName("name").value;
             const fixedLength = !shipCreate.getChildByName("variableLength").checked;
             const length = parseInt(shipCreate.getChildByName("length").value);
-            const x = this.gridx + 30 * letters.indexOf(shipCreate.getChildByName("column").value) + 4;
-            const y = this.gridy + 30 * (parseInt(shipCreate.getChildByName("row").value) - 1) + 4 || 0;
+            const x = this.board.origin.x + 30 * letters.indexOf(shipCreate.getChildByName("column").value) + 4;
+            const y = this.board.origin.y + 30 * (parseInt(shipCreate.getChildByName("row").value) - 1) + 4 || 0;
             const rotation = shipCreate.getChildByName("rotation").checked ? "ver":"hor"
             const newShip = new MovingShips(length,{x:x,y:y},{rotation:rotation, name:name, random:false, fixedLength: fixedLength}, this);
             this.ships.push(newShip);        
@@ -73,9 +49,9 @@ class FleetPlace extends Phaser.Scene{
 
 
 
-        this.randomise = this.add.rectangle(300,this.gridy + 30 * this.height + 24,200,30,0xffffff);
+        this.randomise = this.add.rectangle(300,this.board.origin.y + 30 * this.board.height + 24,200,30,0xffffff);
         this.randomise.setStrokeStyle(2,0x000000);
-        this.add.text(250,this.gridy + 30 * this.height + 14,"Randomise", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'});
+        this.add.text(250,this.board.origin.y + 30 * this.board.height + 14,"Randomise", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'});
         this.randomise.setInteractive();
         this.randomise.on('pointerup', function(){
             this.randomise.setFillStyle(0xffffff);
@@ -91,13 +67,13 @@ class FleetPlace extends Phaser.Scene{
         });
 
 
-        this.start = this.add.rectangle(this.gridx + this.width * 30 + 35, this.gridy + 30 * this.height - 30,100,30,0xffffff).setOrigin(0,0);
+        this.start = this.add.rectangle(this.board.origin.x + this.board.width * 30 + 35, this.board.origin.y + 30 * this.board.height - 30,100,30,0xffffff).setOrigin(0,0);
         this.start.setStrokeStyle(2,0x000000);
         this.start.setInteractive();
         this.add.text(this.start.x + 30, this.start.y + 5,"Start", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0,0)
         this.start.on('pointerup', function(){
             this.scene.stop('FleetPlace');
-            this.scene.start('');
+            this.scene.start('MainGame',{width:this.board.width,height:this.board.height});
         },this);
         this.start.on('pointerdown', () => {
             this.start.setFillStyle(0xb0b0b0);
@@ -114,7 +90,7 @@ class FleetPlace extends Phaser.Scene{
                 target.ship.Drag({x:dragX - dragX % 30,y:dragY - dragY % 30},target.index);
                 // Each ship on the grid is updated
                 this.ships.forEach(ship => {
-                    ship.UpdateShipCells(0xa0a0a0,0xd0d0d0);
+                    ship.UpdateShipCells(false);
                 });
             }
         },this);
