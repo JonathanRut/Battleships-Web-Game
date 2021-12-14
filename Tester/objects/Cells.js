@@ -1,10 +1,11 @@
 class Cell
 {
+    shown = false;
+
     constructor(origin,board)
     {
         this.origin = origin;
         this.board = board;
-        this.shown = false;
         const rectangle = this.board.scene.add.rectangle(origin.x,origin.y,30,30,0xffffff).setOrigin(0,0);
         rectangle.setStrokeStyle(2,0x000000);
         this.borders = [];
@@ -16,14 +17,15 @@ class Cell
     {
         if(this.ships.length > 0)
         {
-            this.ships[0].hit();
-            this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'shipHit').setOrigin(0,0);
+            this.ships[0].Hit();
+            this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'shipPart').setOrigin(0,0);
         }
         else
         {
             this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'guessPin').setOrigin(0,0);
         }
         this.shown = true;
+        this.visualCell.disableInteractive();
     }
 }
 
@@ -70,6 +72,7 @@ class InteractiveCell extends Cell
         this.visualCell.on('pointerdown',function()
         {
             this.showCell();
+            this.board.justHit = true;
         },this);
     }
 }
