@@ -58,7 +58,7 @@ class FleetPlace extends Phaser.Scene{
                 ship = {};
             });
             this.board.ships = []
-            this.CreateFleet();
+            this.CreateFleet(this.board);
         },this);
         this.randomiseButton.on('pointerdown', () => {
             this.randomiseButton.setFillStyle(0xb0b0b0);

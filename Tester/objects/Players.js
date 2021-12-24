@@ -28,6 +28,17 @@ class Player
             });
         });
     }
+
+    endTurn()
+    {
+        this.guessingBoard.grid.forEach(row => 
+            {
+                row.forEach(cell => 
+                {
+                    cell.shown ? null:cell.visualCell.disableInteractive();
+                });
+            });
+    }
 }
 
 class BasicComputer extends Player
@@ -37,4 +48,29 @@ class BasicComputer extends Player
         super(ownBoard,guessingBoard);
     }
     
+    startTurn()
+    {
+        let lost = true;
+        this.ownBoard.ships.forEach(ship => 
+        {
+            if(ship.floating)
+            {
+                lost = false;
+            }
+        });
+        if(lost)
+        {
+            return true;
+        }
+
+        let targetx = 0;
+        let targety = 0;
+        do
+        {
+            targetx = Math.floor(this.guessingBoard.width * Math.random());
+            targety = Math.floor(this.guessingBoard.height * Math.random());
+        }while(this.guessingBoard.grid[targety][targetx].shown === true);
+        this.guessingBoard.grid[targety][targetx].showCell();
+    }
+
 }

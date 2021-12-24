@@ -2,6 +2,7 @@ class Board
 {
     ships = []
     justHit = false;
+    hitShip = false;
     constructor(origin, dimensions, cells, scene)
     {
         this.width = dimensions.width;

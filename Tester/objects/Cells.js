@@ -18,11 +18,14 @@ class Cell
         if(this.ships.length > 0)
         {
             this.ships[0].Hit();
-            this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'shipPart').setOrigin(0,0);
+            this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'shipHit').setOrigin(0,0);
+            this.board.hitShip = true;
         }
         else
         {
             this.board.scene.add.sprite(this.origin.x + 4, this.origin.y + 4, 'guessPin').setOrigin(0,0);
+            this.board.hitShip = false;
+            this.board.justHit = true;
         }
         this.shown = true;
         this.visualCell.disableInteractive();
@@ -72,7 +75,6 @@ class InteractiveCell extends Cell
         this.visualCell.on('pointerdown',function()
         {
             this.showCell();
-            this.board.justHit = true;
         },this);
     }
 }
