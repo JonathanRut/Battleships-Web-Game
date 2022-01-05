@@ -15,11 +15,16 @@ class MainGame extends Phaser.Scene
         let playerBoard = new Board({x:80,y:70},{width:boards.playerBoard.width,height:boards.playerBoard.height},Cell,this);
         let guessBoard = new Board({x:510,y:70},{width:boards.playerBoard.width,height:boards.playerBoard.height},InteractiveCell,this);
 
+        this.add.text(playerBoard.origin.x + 150 ,playerBoard.origin.y - 30, "Player 1", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
+        this.add.text(guessBoard.origin.x + 150 ,guessBoard.origin.y - 30, "Player 2", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
+
+        this.turn = this.add.text(360, 420, "Player 1's turn", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
+
         this.ConvertOldBoards(boards.playerBoard,playerBoard);
         this.ConvertOldBoards(boards.opponentBoard,guessBoard);
 
         this.player1 = new Player(playerBoard,guessBoard);
-        this.player2 = new BasicComputer(guessBoard,playerBoard);
+        this.player2 = new MediumComputer(guessBoard,playerBoard);
 
         // for(let i = 0; i < guessBoard.height; i++)
         // {
@@ -50,6 +55,7 @@ class MainGame extends Phaser.Scene
         if(this.player1.ownBoard.justHit || this.player1.guessingBoard.hitShip)
         {
             // Player 1 turn
+            this.turn.text = "Player 1's turn"
             this.player2.endTurn();
             this.player1.startTurn();
             this.player1.ownBoard.justHit = false;
@@ -57,10 +63,24 @@ class MainGame extends Phaser.Scene
         else if (this.player2.ownBoard.justHit || this.player2.guessingBoard.hitShip)
         {
             // Player 2 turn
+            this.turn.text = "Player 2's turn"
             this.player1.endTurn();
             this.sleep(500);
             this.player2.startTurn();
             this.player2.ownBoard.justHit = false;
+        }
+        //Check for winner
+        if(this.player1.checkWin())
+        {
+            this.player1.endTurn();
+            this.add.text(420, 320, "Player 1 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'});
+            console.log("Player 1 wins")
+        }
+        else if (this.player2.checkWin())
+        {
+            this.add.text(420, 320, "Player 2 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'});
+            this.player1.endTurn();
+            console.log("Player 2 wins")
         }
     }
 
@@ -106,7 +126,6 @@ class MainGame extends Phaser.Scene
         let progress = 0;
         do
         {
-            console.log(progress)
             progress =  Date.now() - start;
         }while(progress < time)
     }

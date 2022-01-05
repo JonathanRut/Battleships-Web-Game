@@ -7,6 +7,9 @@ class MovingShips extends Ship
     {
         // The ships scene rotation and name properties are initialised
         super(length, origin, properties, board);
+        this.length = 1;
+
+        properties.random = this.checkValidCell({x:(origin.x - 4 - this.board.origin.x)/30,y:(origin.y - 4 - this.board.origin.y)/30}) ? true:properties.random;
 
         // If the ship is being placed randomly then random coordinates are found
         if(properties.random)
@@ -20,7 +23,7 @@ class MovingShips extends Ship
                 origin.x = this.board.origin.x + 4 + 30 * randomX;
                 origin.y = this.board.origin.y + 4 + 30 * randomY;
                 this.rotation = (Math.floor(Math.random() * 10) % 2) === 0 ? "ver":"hor";
-            }while(this.board.grid[randomY][randomX].borders.length > 0 || this.board.grid[randomY][randomX].ships.length > 0)
+            }while(this.checkValidCell({x:randomX,y:randomY}))
         }
 
         // The top of the ship and the plus and minus buttons are created
@@ -52,11 +55,15 @@ class MovingShips extends Ship
                 ship.UpdateShipCells(false);
             }); 
             this.UpdateShipCells(false);
-            if(!this.AddLength() || this.board.grid[(top.y - 4 - this.board.origin.y)/30][(top.x - 4 - this.board.origin.x)/30].borders.length > 0 || this.board.grid[(top.y - 4 - this.board.origin.y)/30][(top.x - 4 - this.board.origin.x)/30].ships.length > 1)
+            if(!this.AddLength())
             {
                 this.UpdateShipCells(true);
-                top.x = this.board.origin.x + 4 + 30 * Math.floor(10 * Math.random());
-                top.y = this.board.origin.y + 4 + 30 * Math.floor(10 * Math.random());
+                do
+                {
+                    top.x = this.board.origin.x + 4 + 30 * Math.floor(10 * Math.random());
+                    top.y = this.board.origin.y + 4 + 30 * Math.floor(10 * Math.random());
+                }while(this.checkValidCell({x:(top.x - 4 - this.board.origin.x)/30, y:(top.y - 4 - this.board.origin.y)/30}))
+               
                 plusButton.x = top.x - 10;
                 plusButton.y = top.y;
                 minusButton.x = top.x - 10;
@@ -112,6 +119,7 @@ class MovingShips extends Ship
         this.shipParts.push(newPart);
         // The cells which the ship is on are updated
         this.UpdateShipCells(false);
+        this.length += 1;
         return true;
     }
 
@@ -129,6 +137,7 @@ class MovingShips extends Ship
             this.board.ships.forEach(ship => {
                 ship.UpdateShipCells(false);
             });
+            this.length -= 1;
         }
     }
 
@@ -291,5 +300,18 @@ class MovingShips extends Ship
     {
         this.UpdateShipCells(true);
         this.shipParts.forEach(part => part.destroy());
+    }
+
+    checkValidCell(coords)
+    {
+        try
+        {
+            const cell = this.board.grid[coords.y][coords.x];
+            return cell.borders.length > 0 || cell.ships.length > 0
+        }
+        catch
+        {
+            return true;
+        }
     }
 }

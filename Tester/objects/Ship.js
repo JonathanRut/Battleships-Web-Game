@@ -25,6 +25,7 @@ class GameShip extends Ship
     Hit()
     {
         this.hits += 1;
+        console.log(this.length);
         if(this.hits === this.length)
         {
             this.borderCells.forEach(cell =>
