@@ -25,7 +25,6 @@ class GameShip extends Ship
     Hit()
     {
         this.hits += 1;
-        console.log(this.length);
         if(this.hits === this.length)
         {
             this.borderCells.forEach(cell =>
@@ -34,6 +33,7 @@ class GameShip extends Ship
             });
             this.floating = false;
             console.log(`You sunk my ${this.name}`)
+            this.board.justHit = false;
         }
     }
 

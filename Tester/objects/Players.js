@@ -56,19 +56,6 @@ class BasicComputer extends Player
     
     startTurn()
     {
-        let lost = true;
-        this.ownBoard.ships.forEach(ship => 
-        {
-            if(ship.floating)
-            {
-                lost = false;
-            }
-        });
-        if(lost)
-        {
-            return true;
-        }
-
         let target = {};
         do
         {

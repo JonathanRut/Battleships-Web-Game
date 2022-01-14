@@ -47,10 +47,13 @@ class MovingShips extends Ship
             minusButton.on('pointerup',()=>{this.RemoveLength()},this);
         }
 
+        let startTime = Date.now();
+        let progress = 0;
         // The plus and minus button and top are pushed onto the shipParts stack
         this.shipParts.push(plusButton,minusButton,top);
         while(this.shipParts.length < length + 2)
         {
+            console.log(`&${length}`);
             this.board.ships.forEach(ship => {
                 ship.UpdateShipCells(false);
             }); 
@@ -60,8 +63,12 @@ class MovingShips extends Ship
                 this.UpdateShipCells(true);
                 do
                 {
-                    top.x = this.board.origin.x + 4 + 30 * Math.floor(10 * Math.random());
-                    top.y = this.board.origin.y + 4 + 30 * Math.floor(10 * Math.random());
+                    top.x = this.board.origin.x + 4 + 30 * Math.floor(this.board.width * Math.random());
+                    top.y = this.board.origin.y + 4 + 30 * Math.floor(this.board.height * Math.random());
+                    console.log("a")
+                    console.log(length)
+                    console.log(top.x)
+                    console.log(top.y)
                 }while(this.checkValidCell({x:(top.x - 4 - this.board.origin.x)/30, y:(top.y - 4 - this.board.origin.y)/30}))
                
                 plusButton.x = top.x - 10;
@@ -73,7 +80,15 @@ class MovingShips extends Ship
                 while(this.shipParts.length > 3)
                 {
                     this.RemoveLength();
+                    console.log("b")
                 } 
+                progress = Date.now() - startTime;
+                if(progress > 500)
+                {
+                    length = length > 1 ? length - 1:1;
+                    console.log("shorter")
+                    progress = 0;
+                }
             }
         }
         this.UpdateShipCells(false);
@@ -274,26 +289,26 @@ class MovingShips extends Ship
             catch{continue;}
             cell.showCell();  
         }
-        // for(let i = 0; i < this.board.height; i++)
-        // {
-        //     let line = i + "|";
-        //     for(let j = 0; j < this.board.width; j++)
-        //     {
-        //         if(this.board.grid[i][j].borders.length > 0)
-        //         {
-        //             //line += this.board.grid[i][j].borders.length   + "|";
-        //             line +=  "X|"
-        //             // line += " |"
-        //         }
-        //         else if(this.board.grid[i][j].ships.length > 0)
-        //         {
-        //             line += "O|"
-        //         }
-        //         else{line += " |"}
-        //     }
-        //     console.log(line)
-        // }
-        // console.log("end");
+        for(let i = 0; i < this.board.height; i++)
+        {
+            let line = i + "|";
+            for(let j = 0; j < this.board.width; j++)
+            {
+                if(this.board.grid[i][j].borders.length > 0)
+                {
+                    //line += this.board.grid[i][j].borders.length   + "|";
+                    line +=  "X|"
+                    // line += " |"
+                }
+                else if(this.board.grid[i][j].ships.length > 0)
+                {
+                    line += "O|"
+                }
+                else{line += " |"}
+            }
+            console.log(line)
+        }
+        console.log("end");
     }
 
     destroy()

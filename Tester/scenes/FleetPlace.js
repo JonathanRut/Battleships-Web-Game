@@ -101,17 +101,27 @@ class FleetPlace extends Phaser.Scene{
         board.ships.push(battleship);
         const carrier = new MovingShips(5,{x:120,y:60},{rotation:"hor", name:"Carrier", random:true, fixedLength: false}, board);
         board.ships.push(carrier);
-        const cruiser = new MovingShips(3,{x:210,y:60},{rotation:"ver", name:"Cruiser", random:true, fixedLength:true}, board);
+        const cruiser = new MovingShips(3,{x:210,y:60},{rotation:"ver", name:"Cruiser", random:true, fixedLength:false}, board);
         board.ships.push(cruiser);
-        const submarine = new MovingShips(3,{x:240,y:120},{rotation:"ver", name:"Submarine", random:true, fixedLength:true}, board);
+        const submarine = new MovingShips(3,{x:240,y:120},{rotation:"ver", name:"Submarine", random:true, fixedLength:false}, board);
         board.ships.push(submarine);
-        const destroyer = new MovingShips(2,{x:360,y:60},{rotation:"ver", name:"Destroyer", random:true, fixedLength:true}, board);
+        const destroyer = new MovingShips(2,{x:360,y:60},{rotation:"ver", name:"Destroyer", random:true, fixedLength:false}, board);
         board.ships.push(destroyer);
+        // do
+        // {
+        //     const destroyer = new MovingShips(Math.floor(Math.random() * 10) + 1,{x:360,y:60},{rotation:"ver", name:"Ship", random:true, fixedLength:false}, board);
+        //     board.ships.push(destroyer);
+        //     console.log(`@${this.board.ships.length}`)
+        // }while(this.board.ships.length < 26)
     }
 
     CreateRandomBoard(){
         const tempBoard = new Board({x:0,y:0}, {width:this.board.width,height:this.board.height}, PlacementCell,this);
-        this.CreateFleet(tempBoard);
+        let tempShip
+        this.board.ships.forEach(ship => {
+            tempShip = new MovingShips(ship.length,{x:360,y:60},{rotation:"ver", name:"Destroyer", random:true, fixedLength:false}, tempBoard);
+            tempBoard.ships.push(tempShip);
+        });
         return tempBoard;
     }
 }
