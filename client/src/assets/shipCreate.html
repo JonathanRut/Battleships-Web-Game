@@ -1,0 +1,22 @@
+<style>
+    input{
+        font-size: 12px;
+        display: block;
+        padding: 2px 4px;
+        margin-top: 5px;
+    }
+</style>
+<form id = "form">
+    <p style="margin:5%">Create New Ship</p>
+    <input type="text" name="name" placeholder="Enter your ship name">
+    <label for="variableLength">Variable Length</label>
+    <input type="checkbox" id="variableLength" name="variableLength" style="display: inline;">
+    <input type="number" placeholder="Enter the Length" name="length" required style="min-width: 146px;" min="0">
+    <input type="text" placeholder="Enter Column" name="column" title="A letter representing column">
+    <input type="number" placeholder="Enter Row" name="row" style="min-width: 146px;" min="0" title="A number representing row">
+    <label for="vertical">Vertical</label>
+    <input type="radio" id="vertical" name = "rotation" value="ver" style="display: inline;">
+    <label for="horizontal">Horizontal</label>
+    <input type="radio" id="horizontal" name = "rotation" value="hor"style="display: inline;">
+    <input type="submit" name="createButton" value="Create" style="margin-top: 5px; margin-left: 50px;">
+</form>
