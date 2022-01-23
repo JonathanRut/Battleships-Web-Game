@@ -1,3 +1,5 @@
+
+
 export default class Ship
 {    
     constructor(length, origin, properties, board)

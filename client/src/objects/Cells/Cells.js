@@ -29,5 +29,10 @@ export default class Cell
         this.shown = true;
         this.visualCell.disableInteractive();
     }
+
+    destroy()
+    {
+        this.visualCell.destroy();
+    }
 }
 

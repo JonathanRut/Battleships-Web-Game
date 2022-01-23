@@ -1,5 +1,6 @@
 import Ship from "./Ship";
 import InteractiveCell from "../Cells/InteractiveCell";
+import MultiplayerCell from "../Cells/MultiplayerCell";
 
 export default class GameShip extends Ship
 {
@@ -30,7 +31,7 @@ export default class GameShip extends Ship
     AddBorderCell(cell)
     {
         this.borderCells.push(cell);
-        if(!(cell instanceof InteractiveCell))
+        if(!(cell instanceof InteractiveCell || cell instanceof MultiplayerCell))
         {
             cell.visualCell.setFillStyle(0xd0d0d0);
         }
@@ -40,7 +41,7 @@ export default class GameShip extends Ship
     {
         this.shipCells.push(cell);
         
-        if(!(cell instanceof InteractiveCell))
+        if(!(cell instanceof InteractiveCell || cell instanceof MultiplayerCell))
         {
             this.board.scene.add.sprite(cell.origin.x + 4, cell.origin.y + 4 ,'shipPart').setOrigin(0,0);
             cell.visualCell.setFillStyle(0xa0a0a0);

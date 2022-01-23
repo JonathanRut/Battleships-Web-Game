@@ -28,9 +28,9 @@ export default class MovingShips extends Ship
 
         // The top of the ship and the plus and minus buttons are created
         const top = this.NewPart(origin,3);
-        const plusButton = board.scene.add.sprite(origin.x - 10, origin.y,'plus').setOrigin(0,0);
-        const minusButton = board.scene.add.sprite(origin.x - 10, origin.y + 10,'minus').setOrigin(0,0);
-        const deleteButton = board.scene.add.sprite(origin.x - 10, origin.y + 20, 'cross').setOrigin(0,0);
+        const plusButton = board.scene.add.sprite(origin.x - 10, origin.y,'plus').setOrigin(0,0).setDepth(1);
+        const minusButton = board.scene.add.sprite(origin.x - 10, origin.y + 10,'minus').setOrigin(0,0).setDepth(1);
+        const deleteButton = board.scene.add.sprite(origin.x - 10, origin.y + 20, 'cross').setOrigin(0,0).setDepth(1);
         
         // If the ship is a fixed length the plus and minus buttons are hidden
         if (properties.fixedLength)
@@ -68,6 +68,8 @@ export default class MovingShips extends Ship
                 {
                     top.x = this.board.origin.x + 4 + 30 * Math.floor(this.board.width * Math.random());
                     top.y = this.board.origin.y + 4 + 30 * Math.floor(this.board.height * Math.random());
+                    origin.x = top.x;
+                    origin.y = top.y;
                 }while(this.checkValidCell({x:(top.x - 4 - this.board.origin.x)/30, y:(top.y - 4 - this.board.origin.y)/30}))
                
                 plusButton.x = top.x - 10;
@@ -96,7 +98,7 @@ export default class MovingShips extends Ship
     NewPart(origin, index)
     {
         // A new part of the ship is created at set coordinates
-        const part = this.board.scene.add.sprite(origin.x,origin.y,'shipPart').setOrigin(0,0);
+        const part = this.board.scene.add.sprite(origin.x,origin.y,'shipPart').setOrigin(0,0).setDepth(1);
         // The part is made interactive and draggable
         part.setInteractive();
         this.board.scene.input.setDraggable(part,true);
@@ -225,6 +227,8 @@ export default class MovingShips extends Ship
             this.shipParts[i].x = dragCoords.x + distances[i].x;
             this.shipParts[i].y = dragCoords.y + distances[i].y;
         }
+        this.origin.x = this.shipParts[3].x;
+        this.origin.y = this.shipParts[3].y;
     }
 
     UpdateShipCells(leaving)
