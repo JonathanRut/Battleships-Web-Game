@@ -17,7 +17,7 @@ io.on("connection", function(socket)
     players.push(socket.id);
     let OpponentID;
 
-    if(players.length % 2 === 0)
+    if(players.length === 2)
     {
         OpponentID = players[players.length - 2 ];
         socket.emit('Opponent', players[players.length - 2 ], false);
@@ -47,7 +47,7 @@ io.on("connection", function(socket)
 
 
 
-http.listen(3000, function()
+http.listen(5000, function()
 {
     console.log("The server has started")
 })

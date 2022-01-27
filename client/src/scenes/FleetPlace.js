@@ -129,8 +129,9 @@ export default class FleetPlace extends Phaser.Scene{
             {
                 const scene = this.scene
 
-                this.scene.add.text(this.container.x, this.container.y + 60, "Searching for a Player", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5)
-                this.socket = io("http://localhost:3000");
+                this.scene.add.text(this.container.x, this.container.y + 60, "Searching for a Player", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5);
+                this.scene.scene.pause();
+                this.socket = io("http://battleship.ddns.net:5000");
                 this.socket.on("connect", function()
                 {
                     console.log("Connected");
@@ -159,7 +160,7 @@ export default class FleetPlace extends Phaser.Scene{
                         OpponentBoard.ships.push(ship);
                         if(OpponentBoard.ships.length === scene.board.ships.length)
                         {
-                            scene.scene.start('MainGame', {playerBoard:scene.board,opponentBoard: OpponentBoard, player1:Player, player2:Multiplayer, socket:this.socket, OpponentID:OpponentID, multiplayer:Game.multiplayer, justHit:justHit});
+                            scene.scene.start('MainGame', {playerBoard:scene.board, opponentBoard: OpponentBoard, player1:Player, player2:Multiplayer, socket:this.socket, OpponentID:OpponentID, multiplayer:Game.multiplayer, justHit:justHit});
                         }
                     })
                 });
@@ -188,8 +189,6 @@ export default class FleetPlace extends Phaser.Scene{
         this.input.on('drag',function(pointer,target,dragX,dragY){
             // If the cell you are trying to drag to a new cell then the dragging code is run
             if(target.x !== dragX - dragX % 30 || target.y !== dragY - dragY % 30){
-                // First the ship is marked as being dragged
-                target.ship.justDragged = true;
                 // Next the the ships drag procedure is run
                 target.ship.Drag({x:dragX - dragX % 30,y:dragY - dragY % 30},target.index);
                 // Each ship on the grid is updated

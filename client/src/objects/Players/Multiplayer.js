@@ -12,10 +12,13 @@ export default class Multiplayer extends Player
     startTurn()
     {
         const self = this;
-        this.socket.on('Guess', (coords)=>
+        if(!this.guessingBoard.hitShip)
         {
-            self.guessingBoard.grid[coords.y][coords.x].showCell();
-        })
+            this.socket.on('Guess', (coords)=>
+            {
+                self.guessingBoard.grid[coords.y][coords.x].showCell();
+            })
+        }
     } 
     
     endTurn()

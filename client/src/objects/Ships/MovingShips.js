@@ -159,36 +159,29 @@ export default class MovingShips extends Ship
 
     Rotate()
     {
-        // If the ship has just been dragged the ship doesn't rotate
-        if(this.justDragged){
-            this.justDragged = false;
-        }
-        else
+        // The starting length of the ship parts is saved
+        const shipLength = this.shipParts.length;
+        // The ship is reduced to 1 cell by removing all of it's parts
+        while(this.shipParts.length > 4)
         {
-            // The starting length of the ship parts is saved
-            const shipLength = this.shipParts.length;
-            // The ship is reduced to 1 cell by removing all of it's parts
-            while(this.shipParts.length > 4)
-            {
-                this.RemoveLength();
-            }
-            // The variable holding the rotation is switched
-            this.rotation = this.rotation === "ver" ? "hor":"ver";
-            // The length of the ship is added again in this for loop
-            while(this.shipParts.length < shipLength)
-            {
-                // If it fails to add length the rotation is undone by calling Rotate and adding the failed length
-               if(!this.AddLength())
-               {
-                    this.Rotate();
-                    this.AddLength();
-               }
-            }
-            // Finally every ship on the board is updated to avoid collisions
-            this.board.ships.forEach(ship => {
-                ship.UpdateShipCells(false);
-            });
+            this.RemoveLength();
         }
+        // The variable holding the rotation is switched
+        this.rotation = this.rotation === "ver" ? "hor":"ver";
+        // The length of the ship is added again in this for loop
+        while(this.shipParts.length < shipLength)
+        {
+            // If it fails to add length the rotation is undone by calling Rotate and adding the failed length
+            if(!this.AddLength())
+            {
+                this.Rotate();
+                this.AddLength();
+            }
+        }
+        // Finally every ship on the board is updated to avoid collisions
+        this.board.ships.forEach(ship => {
+            ship.UpdateShipCells(false);
+        });
     }
 
     Drag(dragCoords, index)

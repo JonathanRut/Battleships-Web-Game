@@ -25,6 +25,10 @@ module.exports = {
       }
     ]
   },
+  devServer: {
+    compress: true,
+    public: 'battleship.ddns.net'
+  },      
   plugins: [
     new CleanWebpackPlugin({
       root: path.resolve(__dirname, "../")

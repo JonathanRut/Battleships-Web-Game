@@ -15,6 +15,7 @@ export default class GameShip extends Ship
     
     Hit()
     {
+        console.log(this.hits)
         this.hits += 1;
         if(this.hits === this.length)
         {
