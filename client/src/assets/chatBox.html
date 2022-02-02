@@ -1,9 +1,40 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <style>
+            #messages 
+            {
+                list-style-type: none;
+                margin: 0;
+                padding: 0; 
+                height: 500px;
+                overflow: auto;
+            }
+            #messages > li 
+            {
+                padding: 0.5rem 1rem; 
+                font-size: small;
+                white-space: initial;
+            }
+            #messages > li:nth-child(odd) 
+            {
+                background: #efefef; 
+            }
+            #chatbox 
+            {
+                border:2px solid black;
+                width: 217.15px;
+            }
+        </style>
+    </head>
     <body>
-        <ul id = "messages" style="height: 100px;"></ul>
-        <form id = "form" action="">
-            <input id = input autocomplete="off"><button>Send</button>
-        </form>
+        <div id = "chatbox">
+            <ul id = "messages">
+                <li id = "username">Enter your name</li>
+            </ul>
+            <form id = "form" action="">
+                <input id = "input" autocomplete="off"><button>Send</button>
+            </form>
+        </div>
     </body>
 </html>

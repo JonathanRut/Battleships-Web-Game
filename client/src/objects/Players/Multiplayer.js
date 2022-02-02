@@ -3,10 +3,9 @@ import Player from '../Players/Players'
 
 export default class Multiplayer extends Player
 {
-    constructor(ownBoard, guessingBoard, socket)
+    constructor(ownBoard, guessingBoard)
     {
         super(ownBoard, guessingBoard);
-        this.socket = socket;
     }
 
     startTurn()

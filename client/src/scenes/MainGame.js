@@ -4,91 +4,38 @@ import Cell from "../objects/Cells/Cells";
 import GameShip from "../objects/Ships/GameShip";
 import phaserButton from "../assets/phaserButton";
 import Players from "../objects/Players/Players"
-import Multiplayer from "../objects/Players/Multiplayer";
-import MultiplayerCell from "../objects/Cells/MultiplayerCell";
 
 export default class MainGame extends Phaser.Scene
 {
-    constructor(){
-        super({key:"MainGame"});
+    constructor(key = "MainGame"){
+        super({key:key});
     }
 
     preload(){
         this.load.image('shipPart','src/assets/sprites/shipPart.png');
         this.load.image('guessPin', 'src/assets/sprites/guessPin.png');
         this.load.image('shipHit', "src/assets/sprites/shipHit.png");
+        this.load.html('chatBox', 'src/assets/chatbox.html')
     }
 
     create(settings){
         let playerBoard = new Board({x:80,y:70},{width:settings.playerBoard.width,height:settings.playerBoard.height},settings.player2 === Players ? InteractiveCell:Cell,this);
-        let guessBoard = new Board({x:210 + settings.playerBoard.width * 30 ,y:70},{width:settings.playerBoard.width,height:settings.playerBoard.height}, settings.player1 === Players ? (settings.player2 === Multiplayer ? MultiplayerCell:InteractiveCell):Cell,this);
-
-        if(settings.multiplayer)
-        {
-            guessBoard.grid.forEach(row => 
-                {
-                    row.forEach(cell => 
-                        {
-                            cell.socket = settings.socket;
-                            cell.OpponentID = settings.OpponentID;
-                        })
-                })
-        }
+        let guessBoard = new Board({x:210 + settings.playerBoard.width * 30 ,y:70},{width:settings.playerBoard.width,height:settings.playerBoard.height}, settings.p2Cell,this);
 
         this.add.text(playerBoard.origin.x + 150 ,playerBoard.origin.y - 30, "Player 1 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
         this.add.text(guessBoard.origin.x + 150 ,guessBoard.origin.y - 30, "Player 2 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
 
         this.turn = this.add.text(playerBoard.width * 30 + 60, playerBoard.height * 30 + 120, "Player 1's turn", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
 
-        this.ConvertOldBoards(settings.playerBoard,playerBoard);
-        this.ConvertOldBoards(settings.opponentBoard,guessBoard);
+        this.ConvertOldBoards(settings.playerBoard,playerBoard,"Player 1");
+        this.ConvertOldBoards(settings.opponentBoard,guessBoard, "Player 2");
 
         this.player1 = new settings.player1(playerBoard,guessBoard);
-        this.player2 = new settings.player2(guessBoard,playerBoard,settings.socket);
+        this.player2 = new settings.player2(guessBoard,playerBoard);
+        
 
-        // for(let i = 0; i < guessBoard.height; i++)
-        // {
-        //     let line = i + "|";
-        //     for(let j = 0; j < guessBoard.width; j++)
-        //     {
-        //         if(guessBoard.grid[i][j].borders.length > 0)
-        //         {
-        //             //line += playerBoard.grid[i][j].borders.length   + "|";
-        //             // line +=  "X|"
-        //             line += " |"
-        //         }
-        //         else if(guessBoard.grid[i][j].ships.length > 0)
-        //         {
-        //             line += "O|"
-        //         }
-        //         else{line += " |"}
-        //     }
-        //     console.log(line)
-        // }
-        // console.log("end");
-
-        if(settings.multiplayer)
-        {
-            this.player1.ownBoard.justHit = settings.justHit;
-            this.player2.ownBoard.justHit = !settings.justHit;
-            settings.socket.on('Disconnect', ()=>{
-                this.player2.ownBoard.grid.forEach(row => 
-                    {
-                        row.forEach(cell => 
-                            {
-                                if(cell.ships.length > 0)
-                                {
-                                    cell.showCell();
-                                }
-                            })
-                    })
-            })
-        }
-        else
-        {
-            this.player2.ownBoard.justHit = Math.random() < 0.5 ? true:false;
-            this.player1.ownBoard.justHit = !this.player2.ownBoard.justHit
-        }
+        this.player2.ownBoard.justHit = Math.random() < 0.5 ? true:false;
+        this.player1.ownBoard.justHit = !this.player2.ownBoard.justHit
         
 
         let container = this.add.rectangle(200,this.player1.ownBoard.height * 30 + 120,280,60,0xffffff).setStrokeStyle(2,0x000000);
@@ -96,13 +43,33 @@ export default class MainGame extends Phaser.Scene
         this.playAgain = new phaserButton(container, text, function()
         {
             this.scene.scene.restart();
-            const FleetPlace = this.scene.scene.get('FleetPlace');
+            const FleetPlace = this.scene.scene.get(settings.sceneKey);
             FleetPlace.scene.restart();
-            this.scene.game.scale.resize(960,540);
+            this.scene.game.scale.resize(1160,540);
             this.scene.scene.stop('MainGame');
-            this.scene.scene.start('FleetPlace');
+            this.scene.scene.start(settings.sceneKey);
         },this)
         this.playAgain.hide();
+
+
+        this.add.dom(guessBoard.origin.x + 30 * guessBoard.width + 70,0).createFromCache("chatBox").setOrigin(0,0);
+        this.form = document.getElementById('form')
+        document.getElementById('username').remove();
+
+
+        if(settings.player1 === Players && settings.player2 === Players)
+        {
+            this.submitMessage = (e)=>{e.preventDefault()}
+        }else if(settings.player1 === Players)
+        {
+            form.username = "Player 1"
+        }else if(settings.player2 === Players)
+        {
+            form.username = "Player 2"
+        }
+
+
+        this.form.addEventListener('submit',this.submitMessage);
     }
 
     update()
@@ -133,7 +100,11 @@ export default class MainGame extends Phaser.Scene
             this.player1.startTurn = ()=>{};
             this.player2.startTurn = ()=>{};
             this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, "Player 1 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
-            console.log("Player 1 wins")
+            const messages = document.getElementById('messages');
+            var newMessage = document.createElement('li');
+            newMessage.textContent = "Player 1 Wins!";
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);       
             this.playAgain.show();
             this.player1.checkWin = ()=>{};
             this.player1.ownBoard.grid.forEach((row)=>
@@ -154,7 +125,11 @@ export default class MainGame extends Phaser.Scene
             this.player1.startTurn = ()=>{};
             this.player2.startTurn = ()=>{};
             this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, "Player 2 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
-            console.log("Player 2 wins")
+            const messages = document.getElementById('messages');
+            var newMessage = document.createElement('li');
+            newMessage.textContent = "Player 2 Wins!";
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);       
             this.playAgain.show();
             this.player2.checkWin = ()=>{};
             this.player2.ownBoard.grid.forEach((row)=>
@@ -170,13 +145,13 @@ export default class MainGame extends Phaser.Scene
         }
     }
 
-    ConvertOldBoards(oldBoard,newBoard)
+    ConvertOldBoards(oldBoard,newBoard,owner)
     {
         newBoard.ships = Array(oldBoard.ships.length);
         for(let i = 0; i < newBoard.ships.length; i++)
         {
             const oldShip = oldBoard.ships[i]
-            newBoard.ships[i] = new GameShip(oldShip.length, oldShip.origin, {name:oldShip.name, rotation:oldShip.rotation}, newBoard);
+            newBoard.ships[i] = new GameShip(oldShip.length, oldShip.origin, {name:oldShip.name, rotation:oldShip.rotation}, owner, newBoard);
         }
 
         for(let i = 0; i < oldBoard.height; i++)
@@ -214,5 +189,17 @@ export default class MainGame extends Phaser.Scene
         {
             progress =  Date.now() - start;
         }while(progress < time)
+    }
+
+    submitMessage(e)
+    {
+        e.preventDefault();
+        const messages = document.getElementById('messages');
+        const input = document.getElementById('input');
+        var newMessage = document.createElement('li');
+        newMessage.textContent = this.username + ": " + input.value;
+        messages.appendChild(newMessage);
+        messages.scrollTo(0,messages.scrollHeight);
+        input.value = "";
     }
 }

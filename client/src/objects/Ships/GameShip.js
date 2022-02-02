@@ -4,18 +4,18 @@ import MultiplayerCell from "../Cells/MultiplayerCell";
 
 export default class GameShip extends Ship
 {
-    constructor(length,origin,properties,board)
+    constructor(length,origin,properties,owner,board)
     {
         super(length,origin,properties,board);
         this.shipCells = [];
         this.borderCells = [];
         this.hits = 0;
         this.floating = true;
+        this.owner = owner;
     }
     
     Hit()
     {
-        console.log(this.hits)
         this.hits += 1;
         if(this.hits === this.length)
         {
@@ -24,7 +24,11 @@ export default class GameShip extends Ship
                 cell.showCell();
             });
             this.floating = false;
-            console.log(`You sunk my ${this.name}`)
+            const messages = document.getElementById('messages');
+            var newMessage = document.createElement('li');
+            newMessage.textContent = `${this.owner}: You sunk my ${this.name}`;
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);          
             this.board.justHit = false;
         }
     }
