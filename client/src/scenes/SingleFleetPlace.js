@@ -139,4 +139,19 @@ export default class SingleFleetPlace extends FleetPlace
             return MediumComputer
         }
     }
+
+
+    CreateFleet(board){
+        //Making objects for each ship and adding them to an array
+        const battleship = new MovingShips(4,{x:150,y:180},{rotation:"hor", name:"Battleship", random:true, fixedLength: false}, board);
+        board.ships.push(battleship);
+        const carrier = new MovingShips(5,{x:120,y:60},{rotation:"hor", name:"Carrier", random:true, fixedLength:false}, board);
+        board.ships.push(carrier);
+        const cruiser = new MovingShips(3,{x:210,y:60},{rotation:"ver", name:"Cruiser", random:true, fixedLength:false}, board);
+        board.ships.push(cruiser);
+        const submarine = new MovingShips(3,{x:240,y:120},{rotation:"ver", name:"Submarine", random:true, fixedLength:false}, board);
+        board.ships.push(submarine);
+        const destroyer = new MovingShips(2,{x:360,y:60},{rotation:"ver", name:"Destroyer", random:true, fixedLength:false}, board);
+        board.ships.push(destroyer);
+    }
 }

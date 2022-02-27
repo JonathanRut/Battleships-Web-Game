@@ -1,9 +1,10 @@
 export default class Player
 {
-    constructor(ownBoard, guessingBoard)
+    constructor(ownBoard, guessingBoard, name)
     {
         this.ownBoard = ownBoard;
         this.guessingBoard = guessingBoard;
+        this.name = name;
     }
 
     startTurn()

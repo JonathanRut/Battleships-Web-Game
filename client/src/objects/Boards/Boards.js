@@ -14,6 +14,9 @@ export default class Board
         this.cells = cells;
         this.columnsText = [];
         this.rowsText = [];
+        this.hits = 0;
+        this.guesses = 0;
+        this.sinks = 0;
 
         for(let i = 0; i<this.height;i++){
             // Making 2D array of the cells

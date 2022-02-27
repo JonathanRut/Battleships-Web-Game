@@ -22,16 +22,16 @@ export default class MainGame extends Phaser.Scene
         let playerBoard = new Board({x:80,y:70},{width:settings.playerBoard.width,height:settings.playerBoard.height},settings.player2 === Players ? InteractiveCell:Cell,this);
         let guessBoard = new Board({x:210 + settings.playerBoard.width * 30 ,y:70},{width:settings.playerBoard.width,height:settings.playerBoard.height}, settings.p2Cell,this);
 
-        this.add.text(playerBoard.origin.x + 150 ,playerBoard.origin.y - 30, "Player 1 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
-        this.add.text(guessBoard.origin.x + 150 ,guessBoard.origin.y - 30, "Player 2 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
+        this.player1Text = this.add.text(playerBoard.origin.x + 150 ,playerBoard.origin.y - 30, "Player 1 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
+        this.player2Text = this.add.text(guessBoard.origin.x + 150 ,guessBoard.origin.y - 30, "Player 2 Board", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
 
         this.turn = this.add.text(playerBoard.width * 30 + 60, playerBoard.height * 30 + 120, "Player 1's turn", {fontFamily:'Arial' ,fontSize:'24px', fill:'#000000'});
 
         this.ConvertOldBoards(settings.playerBoard,playerBoard,"Player 1");
         this.ConvertOldBoards(settings.opponentBoard,guessBoard, "Player 2");
 
-        this.player1 = new settings.player1(playerBoard,guessBoard);
-        this.player2 = new settings.player2(guessBoard,playerBoard);
+        this.player1 = new settings.player1(playerBoard,guessBoard, "Player 1");
+        this.player2 = new settings.player2(guessBoard,playerBoard, "Player 2");
         
 
         this.player2.ownBoard.justHit = Math.random() < 0.5 ? true:false;
@@ -70,6 +70,7 @@ export default class MainGame extends Phaser.Scene
 
 
         this.form.addEventListener('submit',this.submitMessage);
+        this.startTime = Date.now();
     }
 
     update()
@@ -77,7 +78,7 @@ export default class MainGame extends Phaser.Scene
         if(this.player1.ownBoard.justHit || this.player1.guessingBoard.hitShip)
         {
             // Player 1 turn
-            this.turn.text = "Player 1's turn"
+            this.turn.text = this.player1.name + "'s turn"
             this.player2.endTurn();
             this.sleep(100);
             this.player1.startTurn();
@@ -86,63 +87,15 @@ export default class MainGame extends Phaser.Scene
         else if (this.player2.ownBoard.justHit || this.player2.guessingBoard.hitShip)
         {
             // Player 2 turn
-            this.turn.text = "Player 2's turn"
+            this.turn.text = this.player2.name + "'s turn"
             this.player1.endTurn();
             this.sleep(100);
             this.player2.startTurn();
             this.player2.ownBoard.justHit = false;
         }
         //Check for winner
-        if(this.player1.checkWin())
-        {
-            this.player1.endTurn();
-            this.player2.endTurn();
-            this.player1.startTurn = ()=>{};
-            this.player2.startTurn = ()=>{};
-            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, "Player 1 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
-            const messages = document.getElementById('messages');
-            var newMessage = document.createElement('li');
-            newMessage.textContent = "Player 1 Wins!";
-            messages.appendChild(newMessage);
-            messages.scrollTo(0,messages.scrollHeight);       
-            this.playAgain.show();
-            this.player1.checkWin = ()=>{};
-            this.player1.ownBoard.grid.forEach((row)=>
-            {
-                row.forEach((cell)=>
-                {
-                    if(cell.ships.length > 0 && !cell.shown)
-                    {
-                        this.add.sprite(cell.origin.x + 4, cell.origin.y + 4 ,'shipPart').setOrigin(0,0);
-                    }
-                });
-            });
-        }
-        else if (this.player2.checkWin())
-        {
-            this.player1.endTurn();
-            this.player2.endTurn();
-            this.player1.startTurn = ()=>{};
-            this.player2.startTurn = ()=>{};
-            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, "Player 2 Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
-            const messages = document.getElementById('messages');
-            var newMessage = document.createElement('li');
-            newMessage.textContent = "Player 2 Wins!";
-            messages.appendChild(newMessage);
-            messages.scrollTo(0,messages.scrollHeight);       
-            this.playAgain.show();
-            this.player2.checkWin = ()=>{};
-            this.player2.ownBoard.grid.forEach((row)=>
-            {
-                row.forEach((cell)=>
-                {
-                    if(cell.ships.length > 0 && !cell.shown)
-                    {
-                        this.add.sprite(cell.origin.x + 4, cell.origin.y + 4 ,'shipPart').setOrigin(0,0);
-                    }
-                });
-            });
-        }
+        this.checkWin(this.player1, this.player2);
+        this.checkWin(this.player2, this.player1)
     }
 
     ConvertOldBoards(oldBoard,newBoard,owner)
@@ -201,5 +154,37 @@ export default class MainGame extends Phaser.Scene
         messages.appendChild(newMessage);
         messages.scrollTo(0,messages.scrollHeight);
         input.value = "";
+    }
+
+    checkWin(player,opponent)
+    {
+        if(player.checkWin())
+        {
+            player.endTurn();
+            opponent.endTurn();
+            player.startTurn = ()=>{};
+            opponent.startTurn = ()=>{};
+            player.checkWin = ()=>{};
+
+            this.add.text(player.ownBoard.width * 30 + 400, player.ownBoard.height * 30 + 120, player.name + " Wins!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
+            const messages = document.getElementById('messages');
+            var newMessage = document.createElement('li');
+            newMessage.textContent = player.name + " Wins!";
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);       
+            this.playAgain.show();
+
+            player.ownBoard.grid.forEach((row)=>
+            {
+                row.forEach((cell)=>
+                {
+                    if(cell.ships.length > 0 && !cell.shown)
+                    {
+                        this.add.sprite(cell.origin.x + 4, cell.origin.y + 4 ,'shipPart').setOrigin(0,0);
+                    }
+                });
+            });
+            console.log(player.guessingBoard)
+        }
     }
 }

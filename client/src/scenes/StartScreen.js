@@ -19,6 +19,7 @@ export default class StartScreen extends Phaser.Scene{
         this.singlePlayerButton = new phaserButton(container,text,function(){
             this.scene.scene.stop('StartScreen');
             socket.emit('left chat');
+            socket.disconnect();
             this.scene.scene.start('SingleFleetPlace');
         },this);
 
@@ -27,6 +28,7 @@ export default class StartScreen extends Phaser.Scene{
         this.multiPlayerButton = new phaserButton(container,text,function(){
             this.scene.scene.stop('StartScreen');
             socket.emit('left chat');
+            socket.disconnect();
             this.scene.scene.start('MultiFleetPlace');
         },this);
 

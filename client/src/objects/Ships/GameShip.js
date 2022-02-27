@@ -21,7 +21,7 @@ export default class GameShip extends Ship
         {
             this.borderCells.forEach(cell =>
             {
-                cell.showCell();
+                cell.showCell(false);
             });
             this.floating = false;
             const messages = document.getElementById('messages');
@@ -30,6 +30,7 @@ export default class GameShip extends Ship
             messages.appendChild(newMessage);
             messages.scrollTo(0,messages.scrollHeight);          
             this.board.justHit = false;
+            this.board.sinks += 1
         }
     }
 

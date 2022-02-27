@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+          #navbar
+          {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+          }
+    
+          #navbar > li a
+          {
+            display: inline-block;
+            color: white;
+            padding: 14px 16px;
+          }
+    
+          nav
+          {
+            padding-bottom: 40px;
+          }
+    
+          #navbar > li
+          {
+            display: inline;
+          }
+    
+          #loginlink
+          {
+            float: right;
+          }
+
+          form
+          {
+            margin: 0 auto;
+            border:2px solid rgb(143, 142, 142);
+            display: block;
+            justify-content: center;
+            text-align: center;
+            width: 400px;
+          }
+          label 
+          {
+            display:list-item;
+            list-style: none;
+          }
+          input
+          {
+            margin-bottom: 15px;
+          }
+    
+      </style>
+      <title>Sign Up</title>
+      <link rel="shortcut icon" type="image/jpg" href="src/assets/favicon.png"/>
+      </head>
+      <body>
+        <nav>
+          <ul id = "navbar">
+            <li>
+              <a href="/">Battleships</a>
+            <li id="loginlink">
+                <a href="/login">Log In</a>
+            </li>
+            <li id="loginlink"i>
+                <a href="/signup">Sign Up</a>
+            </li>
+          </ul>
+        </nav>
+
+        <form action="/auth/signup" method="post">
+            <h2>Sign up</h2>
+            <label for="username">Username</label>
+            <input type="text" id="username" style="width: 200px;" name="username">
+            <label for="password">Passsword</label>
+            <input type="password" id="password" style="width: 200px;" name="password">
+            <label for="confirmPassowrd">Confirm Password</label>
+            <input type="password" id="confirmPassowrd" style="width: 200px;" name="confirmPassowrd">
+            <br>
+            <input type = "submit" id="submit">
+            {{#if message}}
+              <h4>{{message}}</h4>
+            {{/if}}
+        </form>
+      </body>
+</html>

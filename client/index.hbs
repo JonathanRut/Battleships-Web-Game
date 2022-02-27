@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      *{
+          margin:1;
+      }
+      canvas{
+          margin: 0 auto;
+          border:2px solid rgb(143, 142, 142);
+      }
+      #phaser-game
+      {
+        display: flex;
+        justify-content: center;
+      }
+      #navbar
+      {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #333;
+      }
+
+      #navbar > li a
+      {
+        display: inline-block;
+        color: white;
+        padding: 14px 16px;
+      }
+
+      nav
+      {
+        padding-bottom: 40px;
+      }
+
+      #navbar > li
+      {
+        display: inline;
+      }
+
+      #loginlink
+      {
+        float: right;
+      }
+
+  </style>
+  <title>Battleships</title>
+  <link rel="shortcut icon" type="image/jpg" href="src/assets/favicon.png"/>
+  </head>
+  <body>
+    <nav>
+          <ul id = "navbar">
+            <li>
+              <a href="/">Battleships</a>
+            <li id="loginlink">
+              {{#if loggedIn}}
+                <a href="/account">Account</a>
+              {{else}}
+                <a href="/login">Log In</a>
+              {{/if}}
+            </li>
+            <li id="loginlink"i>
+              {{#if loggedIn}}
+                <a href="/signout">Sign Out</a>
+              {{else}}
+                <a href="/signup">Sign Up</a>
+              {{/if}}
+            </li>
+          </ul>
+        </nav>
+    <div id = "phaser-game"></div>
+  </body>
+</html>
