@@ -93,6 +93,7 @@ router.get('/account',(req,res)=>
             values.Accuracy = Math.floor((result[0].TotalHits / result[0].TotalGuesses) * 100)
             values.WinRate = Math.floor((result[0].GamesWon / result[0].GamesPlayed) * 100)
             values.games = []
+            values.leaderboard = []
             db.query('SELECT games.GameID, username, NumShipsHit, NumShipsSunk, NumGuesses, Winner, Opponent, games.TotalSinks, games.TotalGuesses, games.TotalHits, games.DurationOfGame FROM games, gamesplayedbyplayers, players WHERE players.Username = ? AND players.PlayerID = gamesplayedbyplayers.PlayerID AND games.GameID = gamesplayedbyplayers.GameID ORDER BY GameID DESC LIMIT 15 ', [user.username], (error,results)=>
             {
                 if(error)
@@ -112,7 +113,18 @@ router.get('/account',(req,res)=>
                             record.DurationOfGame = Math.floor(record.DurationOfGame / 60)
                         })
                     values.games = results
-                    res.render(__dirname.substring(0,__dirname.indexOf("routes")) + "accountviews/account.hbs", values);
+                    db.query('SELECT username, GamesWon, LeaderboardPlacement FROM players WHERE LeaderboardPlacement < 11 ORDER BY LeaderboardPlacement ASC',(error,results)=>
+                    {
+                        if(error)
+                        {
+                            console.log(error)
+                        }
+                        else
+                        {
+                            values.leaderboard = results
+                            res.render(__dirname.substring(0,__dirname.indexOf("routes")) + "accountviews/account.hbs", values);
+                        }
+                    })
                 }
             })
         })

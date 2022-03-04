@@ -99,7 +99,7 @@
             <h1>{{username}}'s Account<h1></h1>
             <h2>Player's stats:</h2>
             <ul>
-                <li>Leaderboard Placement: {{LeaderboardPlacement}}</li>
+                <li>Leaderboard Position: {{LeaderboardPlacement}}</li>
                 <li>Games Played: {{GamesPlayed}}</li>
                 <li>Games Won: {{GamesWon}}</li>
                 <li>Total Sinks: {{TotalSinks}}</li>
@@ -110,6 +110,24 @@
                 <li>Date Joined: {{DateJoined}}</li>
             </ul>
             <br>
+            <h2>Leaderboard</h2>
+            <table>
+              <thead>
+                <th scope="col">Position</th>
+                <th scope="col">Username</th>
+                <th scope="col">Wins</th>
+              </thead>
+              <tbody>
+                {{#each leaderboard}}
+                <tr>
+                  <td>{{this.LeaderboardPlacement}}</td>
+                  <td>{{this.username}}</td>
+                  <td>{{this.GamesWon}}</td>
+                </tr>
+                {{/each}}
+              </tbody>
+            </table>
+
             <h2>Previous Games</h2>
             {{#each games}}
               <div id = "game">
@@ -130,14 +148,14 @@
                       <td>{{this.NumShipsSunk}}</td>
                       <td>{{this.NumShipsHit}}</td>
                       <td>{{this.NumGuesses}}</td>
-                      <td>{{this.p1Accuracy}}</td>
+                      <td>{{this.p1Accuracy}}%</td>
                     </tr>
                     <tr>
                       <th scope="row">{{this.Opponent}}</th>
                       <td>{{this.p2Sinks}}</td>
                       <td>{{this.p2Hits}}</td>
                       <td>{{this.p2Guesses}}</td>
-                      <td>{{this.p2Accuracy}}</td>
+                      <td>{{this.p2Accuracy}}%</td>
                     </tr>
                   </tbody>
                   <tfoot>

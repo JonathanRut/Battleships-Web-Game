@@ -2,9 +2,9 @@ import BasicComputer from "./BasicComputer";
 
 export default class MediumComputer extends BasicComputer
 {
-    constructor(ownBoard,guessingBoard)
+    constructor(ownBoard,guessingBoard,name)
     {
-        super(ownBoard,guessingBoard);
+        super(ownBoard,guessingBoard,name);
         this.destroyingShip = false;
         this.foundDirection = false;    
     }

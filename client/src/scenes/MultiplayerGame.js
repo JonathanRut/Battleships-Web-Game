@@ -30,7 +30,6 @@ export default class MultiplayerGame extends MainGame
         {
             player1.name = gamename
             player1Text.text = gamename + "'s Board"
-            console.log(gamename)
             turnText.text = settings.justHit ? gamename + "'s turn":settings.opponentName + "'s turn"
             player1.ownBoard.ships.forEach(ship =>
                 {
@@ -45,12 +44,24 @@ export default class MultiplayerGame extends MainGame
                 {
                     row.forEach(cell => 
                         {
-                            if(cell.ships.length > 0)
+                            if(cell.ships.length > 0 && !cell.shown)
                             {
-                                cell.showCell();
+                                this.add.sprite(cell.origin.x + 4, cell.origin.y + 4 ,'shipPart').setOrigin(0,0);
                             }
                         })
                 })
+            this.player1.endTurn()
+            this.player1.startTurn = ()=>{};
+            this.player2.startTurn = ()=>{};
+            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, this.player2.name + " Disconnected!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
+            const messages = document.getElementById('messages');
+            var newMessage = document.createElement('li');
+            newMessage.textContent = this.player2.name + " Disconnected!";
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);   
+                
+            this.playAgain.show();
+            this.socket.emit('game finished')
         })
         this.player2.ownBoard.grid.forEach(row => 
             {
@@ -85,7 +96,6 @@ export default class MultiplayerGame extends MainGame
         messages.scrollTo(0,messages.scrollHeight);
         this.socket.emit('game message', input.value);
         input.value = "";
-        console.log(this.socket.hasListeners('gameID'))
     }
 
     checkWin(player,opponent)
@@ -118,7 +128,6 @@ export default class MultiplayerGame extends MainGame
                     }
                 });
             });
-            console.log(this.socket)
             if(this.trueP1)
             {
                 console.log('Game record inserted')
@@ -128,24 +137,17 @@ export default class MultiplayerGame extends MainGame
                     TotalSinks: this.player1.ownBoard.sinks + this.player2.ownBoard.sinks,
                     TotalGuesses: this.player1.ownBoard.guesses + this.player2.ownBoard.guesses,
                     DurationOfGame: (Date.now() - this.startTime)/1000
-                }, this.OpponentID)
-            }
-            const socket = this.socket
-            const player1 = this.player1
-            const player2 = this.player2
-            this.socket.on('gameID', function(gameID)
-            {
-                console.log('Player record update')
-                socket.emit('player update', document.cookie.split('=')[1], {
+                },{
                     PlayerID: 0,
-                    GameID: gameID,
-                    NumShipsHit: player1.guessingBoard.hits,
-                    NumShipsSunk: player1.guessingBoard.sinks,
-                    NumGuesses: player1.guessingBoard.guesses,
+                    GameID: 0,
+                    NumShipsHit: this.player1.guessingBoard.hits,
+                    NumShipsSunk: this.player1.guessingBoard.sinks,
+                    NumGuesses: this.player1.guessingBoard.guesses,
                     Winner: player.name,
-                    Opponent: player2.name
-                })
-            })
+                    Opponent: this.player2.name
+                },document.cookie.split('=')[1],this.player2.name)
+            }
+            this.socket.emit('game finished')
         }
     }
 }

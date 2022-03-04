@@ -38,12 +38,8 @@ db.connect((error)=>
 
 
 let players = []
-let playerNum = 0;
-let totalNum = 0;
 io.on("connection", function(socket)
 {
-    playerNum += 1;
-    totalNum += 1;
     console.log("A user connected: " + socket.id);
     let OpponentID;
     let username;
@@ -77,11 +73,11 @@ io.on("connection", function(socket)
 
     socket.on("disconnect", function()
     {
-        playerNum -= 1;
-        console.log("A user disconnectd: " + socket.id)
+        console.log("A user disconnected: " + socket.id)
         if(username)
         {
             io.emit('chat message', username.toUpperCase() + " LEFT")
+            username = ''
         }
         if(OpponentID)
         {
@@ -112,14 +108,6 @@ io.on("connection", function(socket)
         io.emit('chat message', username.toUpperCase() + " JOINED")
     })
 
-    socket.on('left chat', function()
-    {
-        if(username)
-        {
-            io.emit('chat message', username.toUpperCase() + " LEFT")
-        }
-    })
-
     socket.on('game message', function(message)
     {
         io.to(OpponentID).emit('game message', username + ": " + message);
@@ -131,9 +119,9 @@ io.on("connection", function(socket)
         io.to(socket.id).emit('setName', username === "Player 2" ? "Player 1":username)
     })
 
-    socket.on('game insert', function(values,SocketID)
+    socket.on('game insert', function(gameValues,playerValues,token,opponentName)
     {
-        db.query('INSERT INTO games SET ?', values, (error, results) => 
+        db.query('INSERT INTO games SET ?', gameValues, (error, results) => 
         {
             if(error)
             {
@@ -141,17 +129,43 @@ io.on("connection", function(socket)
             }
             else
             {
-                io.to([socket.id,SocketID]).emit('gameID', results.insertId)
+                playerValues.GameID = results.insertId
+            }
+            let username
+            try
+            {
+                username = jwt.verify(token,process.env.MY_SECRET).username
+                updatePlayerRecords(username,playerValues)
+            }
+            catch
+            {
+                username = 'Player 2'
+            }
+            if(opponentName !== 'Player 2')
+            {
+                updatePlayerRecords(opponentName,
+                    {
+                        PlayerID: 0,
+                        GameID: playerValues.GameID,
+                        NumShipsHit: gameValues.TotalHits - playerValues.NumShipsHit,
+                        NumShipsSunk: gameValues.TotalSinks - playerValues.NumShipsSunk,
+                        NumGuesses: gameValues.TotalGuesses - playerValues.NumGuesses,
+                        Winner: playerValues.Winner,
+                        Opponent: username
+                    })
             }
         })
     })
 
-    socket.on('player update', function(token, values)
+    socket.on('game finished',function()
     {
-        try
-        {
-            const username = jwt.verify(token,process.env.MY_SECRET).username
-            db.query('SELECT PlayerID, GamesPlayed, GamesWon, TotalHits, TotalSinks, TotalGuesses FROM players WHERE username = ?', [username], (error,results)=>
+        OpponentID = '';
+    })
+});
+
+function updatePlayerRecords(username,values)
+{
+    db.query('SELECT PlayerID, GamesPlayed, GamesWon, TotalHits, TotalSinks, TotalGuesses, LeaderboardPlacement FROM players WHERE username = ?', [username], (error,results)=>
             {
                 if(error)
                 {
@@ -159,7 +173,70 @@ io.on("connection", function(socket)
                 }
                 else
                 {
-                    const {PlayerID, GamesPlayed, GamesWon, TotalHits, TotalSinks, TotalGuesses} = results[0]
+                    const {PlayerID, GamesPlayed, GamesWon, TotalHits, TotalSinks, TotalGuesses, LeaderboardPlacement} = results[0]
+                    if(values.Winner === username)
+                    {
+                        db.query('SELECT LeaderboardPlacement FROM players WHERE GamesWon = ?', [GamesWon + 1], (error,results)=>
+                        {
+                            if(error)
+                            {
+                                console.log(error)
+                            }
+                            
+                            if(results.length === 0)
+                            {
+                                db.query('SELECT username FROM players WHERE LeaderboardPlacement = ?',[LeaderboardPlacement],(error,results)=>
+                                {
+                                    if(results.length > 1)
+                                    {
+                                        db.query('UPDATE players SET LeaderboardPlacement = LeaderboardPlacement + 1 WHERE GamesWon < ?', [GamesWon + 1], (error,results)=>
+                                        {
+                                            if(error)
+                                            {
+                                                console.log(error)
+                                            }
+                                            else
+                                            {
+                                                db.query('UPDATE players SET LeaderboardPlacement = ? WHERE PlayerID = ?',[LeaderboardPlacement,PlayerID],(error,results)=>
+                                                {
+                                                    if(error)
+                                                    {
+                                                        console.log(error)
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    }
+                                })
+                            }
+                            else
+                            {   db.query('SELECT username FROM players WHERE LeaderboardPlacement = ?',[LeaderboardPlacement],(error,result)=>
+                                {
+                                    if(error)
+                                    {
+                                        console.log(error)
+                                    }
+                                    if(result.length === 1)
+                                    {
+                                        db.query('UPDATE players SET LeaderboardPlacement = LeaderboardPlacement - 1 WHERE LeaderboardPlacement > ?',[LeaderboardPlacement],(error,results)=>
+                                        {
+                                            if(error)
+                                            {
+                                                console.log(error)
+                                            }
+                                        })
+                                    }
+                                    db.query('UPDATE players SET LeaderboardPlacement = ? WHERE PlayerID = ?',[results[0].LeaderboardPlacement,PlayerID], (error,results)=>
+                                    {
+                                        if(error)
+                                        {
+                                            console.log(error)
+                                        }
+                                    })
+                                })
+                            }
+                        })
+                    }
                     db.query('UPDATE players SET ? WHERE PlayerID = ?',[{
                         GamesPlayed:GamesPlayed + 1, 
                         GamesWon: GamesWon + (values.Winner === username ? 1:0),
@@ -183,15 +260,7 @@ io.on("connection", function(socket)
                     })
                 }
             })
-        }
-        catch
-        {
-            return
-        }
-    })
-});
-
-
+}
 
 
 http.listen(5000, function()

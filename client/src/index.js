@@ -11,8 +11,6 @@ const config = {
     backgroundColor: 0xffffff,
     width: 1160,
     height: 540,
-    // width: 1200,
-    // height: 1000,
     dom: {
         createContainer: true
     },

@@ -16,21 +16,26 @@ export default class FleetPlace extends Phaser.Scene{
     }
 
     create(){
+        // The board is created and stored then a fleet is added to the board
         this.board = new Board({x:116,y:56},{width:10,height:10},PlacementCell,this);
         this.CreateFleet(this.board);
 
+        // A randomise button is created
         let container = this.add.rectangle(300,this.board.origin.y + 30 * this.board.height + 24,200,30,0xffffff).setStrokeStyle(2,0x000000);
         let text = this.add.text(container.x,container.y,"Randomise", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5);
         this.randomiseButton = new phaserButton(container,text, function(){
+            // When the button is pressed the colour changes and the ships on the board are destroyed
             this.container.setFillStyle(0xffffff);
             const length = this.scene.board.ships.length;
             for(let i = 0; i < length; i++)
             {
                 this.scene.board.ships[0].destroy();
             }
+            // After the board is empty and new random fleet is added to the board
             this.scene.CreateFleet(this.scene.board);
         },this);
 
+        // A start button is created
         container = this.add.rectangle(this.board.origin.x + this.board.width * 30 + 85, this.board.origin.y + 30 * this.board.height - 30,100,30,0xffffff).setStrokeStyle(2,0x000000);
         text = this.add.text(container.x, container.y,"Start", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5)
         this.startButton = new phaserButton(container,text,this.onStart,this)
@@ -40,9 +45,8 @@ export default class FleetPlace extends Phaser.Scene{
         this.input.on('drag',function(pointer,target,dragX,dragY){
             // If the cell you are trying to drag to a new cell then the dragging code is run
             if(target.x !== dragX - dragX % 30 || target.y !== dragY - dragY % 30){
-                // Next the the ships drag procedure is run
+                // Next the the ships drag procedure is run and each ship on the grid is updated
                 target.ship.Drag({x:dragX - dragX % 30,y:dragY - dragY % 30},target.index);
-                // Each ship on the grid is updated
                 this.board.ships.forEach(ship => {
                     ship.UpdateShipCells(false);
                 });

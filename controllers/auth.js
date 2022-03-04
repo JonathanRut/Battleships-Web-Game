@@ -81,23 +81,55 @@ exports.signup = (req,res)=>
 
         const today = new Date();
         const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-
-        db.query('INSERT INTO players SET ?',{PlayerID:0, Username:username, Password:hashedpassword, GamesPlayed:0, GamesWon:0, LeaderboardPlacement:0, TotalHits:0, TotalSinks:0, TotalGuesses:0, DateJoined:date}, (error, results)=>
+        let LeaderboardPlacement
+        db.query('SELECT LeaderboardPlacement FROM players WHERE GamesWon = 0',(error,results)=>
         {
             if(error)
             {
                 console.log(error)
             }
+            else if(results.length === 0)
+            {
+                db.query('SELECT MAX(LeaderboardPlacement) AS Bottom FROM players',(error,results)=>
+                {
+                    if(error)
+                    {
+                        console.log(error)
+                    }
+                    else
+                    {
+                        LeaderboardPlacement = results[0].Bottom === null ? 1:results[0].Bottom + 1
+                        insertPlayer({PlayerID:0, Username:username, Password:hashedpassword, GamesPlayed:0, GamesWon:0, LeaderboardPlacement:LeaderboardPlacement, TotalHits:0, TotalSinks:0, TotalGuesses:0, DateJoined:date})
+                    }
+                })
+            }
             else
             {
-                const token = jwt.sign({username:username}, process.env.MY_SECRET, {expiresIn:"1hr"})
-                res.cookie('token', token, 
-                {
-                    httpOnly:false
-                })
-                console.log(results)
-                return res.redirect('/')
+                LeaderboardPlacement = results[0].LeaderboardPlacement
+                insertPlayer({PlayerID:0, Username:username, Password:hashedpassword, GamesPlayed:0, GamesWon:0, LeaderboardPlacement:LeaderboardPlacement, TotalHits:0, TotalSinks:0, TotalGuesses:0, DateJoined:date})
             }
         })
+
+        function insertPlayer(values)
+        {
+            db.query('INSERT INTO players SET ?',values, (error, results)=>
+            {
+                if(error)
+                {
+                    console.log(error)
+                }
+                else
+                {
+                    const token = jwt.sign({username:username}, process.env.MY_SECRET, {expiresIn:"1hr"})
+                    res.cookie('token', token, 
+                    {
+                        httpOnly:false
+                    })
+                    return res.redirect('/')
+                }
+            })
+        }
+        
     });
 }
+

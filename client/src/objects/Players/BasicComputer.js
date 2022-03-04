@@ -2,9 +2,9 @@ import Player from "./Players";
 
 export default class BasicComputer extends Player
 {
-    constructor(ownBoard,guessingBoard)
+    constructor(ownBoard,guessingBoard,name)
     {
-        super(ownBoard,guessingBoard);
+        super(ownBoard,guessingBoard,name);
     }
     
     startTurn()
