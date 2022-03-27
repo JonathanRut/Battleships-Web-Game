@@ -54,7 +54,7 @@ export default class SingleFleetPlace extends FleetPlace
         // Numeric input boxes are made from cache and added to the scene allowing for variable board size
         this.boardEdit = this.add.dom(10, this.board.origin.y).createFromCache('boardEdit').setOrigin(0,0)
 
-        // The Coloums input box is stored
+        // The columns input box is stored
         const boardColumns = document.getElementById('boardColumns');
         boardColumns.oninput = ()=>
         {
@@ -80,7 +80,7 @@ export default class SingleFleetPlace extends FleetPlace
                 }
                 else
                 {
-                    // If it succededs in removing a column the other elements in the scene are moved and canvas size is increased
+                    // If it succeeds in removing a column the other elements in the scene are moved and canvas size is increased
                     this.startButton.container.x -= 30;
                     this.startButton.text.x -= 30;
                     this.shipForm.x -= 30;
@@ -114,7 +114,7 @@ export default class SingleFleetPlace extends FleetPlace
                 }
                 else
                 {
-                    // If it succededs in removing a row the other elements in the scene are moved and canvas size is increased
+                    // If it succeeds in removing a row the other elements in the scene are moved and canvas size is increased
                     this.randomiseButton.container.y -= 30;
                     this.randomiseButton.text.y -= 30;
                     this.game.scale.resize(this.game.scale.width,this.game.scale.height - 30);
@@ -129,9 +129,9 @@ export default class SingleFleetPlace extends FleetPlace
     onStart()
     {
         // When the user presses start the players they selected are gotten
-        let player1 = this.scene.getPlayer('Player1')
-        let player2 = this.scene.getPlayer('Player2')
-        // The current scene is stoped
+        let player1 = this.scene.GetPlayerID('Player1')
+        let player2 = this.scene.GetPlayerID('Player2')
+        // The current scene is stopped
         this.scene.scene.stop('FleetPlace');
         // The Main Game is started and the settings that the user selected are passed to the next scene
         this.scene.scene.start('MainGame', {playerBoard:this.scene.board,opponentBoard: this.scene.CreateRandomBoard(), player1:player1, player2:player2, p2Cell:player1 === Player ? InteractiveCell:Cell, sceneKey: 'SingleFleetPlace'});
@@ -141,7 +141,7 @@ export default class SingleFleetPlace extends FleetPlace
         // A temp board is created with the same height and width of the main boards scene
         const tempBoard = new Board({x:0,y:0}, {width:this.board.width,height:this.board.height}, PlacementCell,this);
         let tempShip
-        // The main board is itterated through and the temp board is populated with ships the same length as the ones on the main board
+        // The main board is iterated through and the temp board is populated with ships the same length as the ones on the main board
         this.board.ships.forEach(ship => {
             tempShip = new MovingShips(ship.length,{x:360,y:60},{rotation:"ver", name:"Ship", random:true, fixedLength:false}, tempBoard);
             tempBoard.ships.push(tempShip);
@@ -150,7 +150,7 @@ export default class SingleFleetPlace extends FleetPlace
         return tempBoard;
     }
 
-    getPlayer(id)
+    GetPlayerID(id)
     {
         // The player selected is found the the class for that player is returned
         let player = document.getElementById(id).value
@@ -166,5 +166,19 @@ export default class SingleFleetPlace extends FleetPlace
         {
             return MediumComputer
         }
+    }
+
+    CreateFleet(board){
+        //Making objects for each ship and adding them to an array
+        const battleship = new MovingShips(4,{x:150,y:180},{rotation:"hor", name:"Battleship", random:true, fixedLength: false}, board);
+        board.ships.push(battleship);
+        const carrier = new MovingShips(5,{x:120,y:60},{rotation:"hor", name:"Carrier", random:true, fixedLength: false}, board);
+        board.ships.push(carrier);
+        const cruiser = new MovingShips(3,{x:210,y:60},{rotation:"ver", name:"Cruiser", random:true, fixedLength:false}, board);
+        board.ships.push(cruiser);
+        const submarine = new MovingShips(3,{x:240,y:120},{rotation:"ver", name:"Submarine", random:true, fixedLength:false}, board);
+        board.ships.push(submarine);
+        const destroyer = new MovingShips(2,{x:360,y:60},{rotation:"ver", name:"Destroyer", random:true, fixedLength:false}, board);
+        board.ships.push(destroyer);
     }
 }

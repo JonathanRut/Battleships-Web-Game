@@ -40,7 +40,7 @@ export default class StartScreen extends Phaser.Scene{
         const input = document.getElementById('input');
         let username;
 
-        // The user is conected to the external server
+        // The user is connected to the external server
         const socket = io('http://localhost:5000');
 
         form.addEventListener('submit', function(e)

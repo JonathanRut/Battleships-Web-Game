@@ -9,6 +9,7 @@ export default class PlacementCell extends Cell
     
     showCell()
     {
+        // When the cell is shown the shade of the cell is changed instead of adding a sprite
         if(this.ships.length > 0)
         {
             this.visualCell.setFillStyle(0xa0a0a0);

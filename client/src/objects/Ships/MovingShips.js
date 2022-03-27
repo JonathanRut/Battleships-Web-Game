@@ -4,7 +4,7 @@ export default class MovingShips extends Ship
 {
     constructor(length, origin, properties, board)
     {
-        // The ships scene rotation and name properties are initialised
+        // The ships scene rotation, name and length properties are initialised
         super(length, origin, properties, board);
         this.shipParts = [];
         this.length = 1;
@@ -26,22 +26,22 @@ export default class MovingShips extends Ship
             }while(this.checkValidCell({x:randomX,y:randomY}))
         }
 
-        // The top of the ship and the plus and minus buttons are created
+        // The top of the ship and the plus, minus and delete buttons are created
         const top = this.NewPart(origin,3);
         const plusButton = board.scene.add.sprite(origin.x - 10, origin.y,'plus').setOrigin(0,0).setDepth(1);
         const minusButton = board.scene.add.sprite(origin.x - 10, origin.y + 10,'minus').setOrigin(0,0).setDepth(1);
         const deleteButton = board.scene.add.sprite(origin.x - 10, origin.y + 20, 'cross').setOrigin(0,0).setDepth(1);
         
-        // If the ship is a fixed length the plus and minus buttons are hidden
+        // If the ship is a fixed length the plus, minus and delete buttons are hidden
         if (properties.fixedLength)
         {
             plusButton.setVisible(false);
             minusButton.setVisible(false);
             deleteButton.setVisible(false);
         }
-        // If the ships length can be changed the plus and minus buttons are set to interactive and given there functions
         else
         {
+            // If the ships length can be changed the plus, minus and delete buttons are set to interactive and given there functions
             plusButton.setInteractive();
             minusButton.setInteractive();
             deleteButton.setInteractive();
@@ -51,19 +51,29 @@ export default class MovingShips extends Ship
             deleteButton.on('pointerup',()=>{this.destroy()},this)
         }
 
+        // The start time and progress of trying to make the ship is stored
         let startTime = Date.now();
         let progress = 0;
-        // The plus and minus button and top are pushed onto the shipParts stack
+
+        // The plus, minus and delete button and top are pushed onto the shipParts stack
         this.shipParts.push(plusButton,minusButton,deleteButton,top);
+
+        //The rest of the length of the ship is added
         while(this.shipParts.length < length + 3)
         {
-            this.board.ships.forEach(ship => {
-                ship.UpdateShipCells(false);
-            }); 
+            // All the cells containing the ship are updated to avoid collisions
             this.UpdateShipCells(false);
+
+            // An attempt is made to add the length
             if(!this.AddLength())
             {
+                // If it fails the cells this ship was trying the be made in are reset to empty
                 this.UpdateShipCells(true);
+                this.board.ships.forEach(ship => {
+                    ship.UpdateShipCells(false);
+                }); 
+
+                // A do while loop finds random valid starting coords for the the ship to be made
                 do
                 {
                     top.x = this.board.origin.x + 4 + 30 * Math.floor(this.board.width * Math.random());
@@ -72,6 +82,7 @@ export default class MovingShips extends Ship
                     origin.y = top.y;
                 }while(this.checkValidCell({x:(top.x - 4 - this.board.origin.x)/30, y:(top.y - 4 - this.board.origin.y)/30}))
                
+                // The buttons for editing the ship are moved
                 plusButton.x = top.x - 10;
                 plusButton.y = top.y;
                 minusButton.x = top.x - 10;
@@ -79,14 +90,19 @@ export default class MovingShips extends Ship
                 deleteButton.x = top.x - 10;
                 deleteButton.y = top.y + 20;                    
                 
+                // A random rotation is made
                 this.rotation = (Math.floor(Math.random() * 10) % 2) === 0 ? "ver":"hor";
+                // And the shipParts array is reset
                 while(this.shipParts.length > 4)
                 {
                     this.RemoveLength();
                 } 
+
+                // A check is made to see if creating the ship is taking too long
                 progress = Date.now() - startTime;
                 if(progress > 500)
                 {
+                    // If it is the length of the ship is decreased
                     length = length > 1 ? length - 1:1;
                     progress = 0;
                 }
@@ -99,9 +115,11 @@ export default class MovingShips extends Ship
     {
         // A new part of the ship is created at set coordinates
         const part = this.board.scene.add.sprite(origin.x,origin.y,'shipPart').setOrigin(0,0).setDepth(1);
+
         // The part is made interactive and draggable
         part.setInteractive();
         this.board.scene.input.setDraggable(part,true);
+
         // A reference for the ship and its index are added as properties to the part
         // These are required for dragging the ship
         part.ship = this;
@@ -116,7 +134,7 @@ export default class MovingShips extends Ship
 
     AddLength()
     {
-        // The index of the last ship is found and the new X and Y coords are calculated
+        // The index of the last ship part is found and the new X and Y coords of new part are calculated
         const lastship = this.shipParts.length - 1;
         const newX = this.shipParts[lastship].x + (this.rotation === "ver" ? 0:30);
         const newY = this.shipParts[lastship].y + (this.rotation === "ver" ? 30:0);
@@ -130,10 +148,12 @@ export default class MovingShips extends Ship
         {
             return false;
         }
+
         // A new part of the ship is created and saved into the array with the other parts
         const newPart = this.NewPart({x:newX,y:newY},this.shipParts.length);
         this.shipParts.push(newPart);
-        // The cells which the ship is on are updated
+
+        // The cells which the ship is on are updated and length is increased
         this.UpdateShipCells(false);
         this.length += 1;
         return true;
@@ -146,13 +166,16 @@ export default class MovingShips extends Ship
         {
             // This sets the current cells of the ship to empty
             this.UpdateShipCells(true);
+
             // The part you are removing is removed from the array and destroyed
             const deletedShip = this.shipParts.pop();
             deletedShip.destroy();
-            // Every ship on the board is updated to count for overlaps
+
+            // Every ship on the board is updated to avoid overlaps
             this.board.ships.forEach(ship => {
                 ship.UpdateShipCells(false);
             });
+            // Length is decreased
             this.length -= 1;
         }
     }
@@ -166,8 +189,9 @@ export default class MovingShips extends Ship
         {
             this.RemoveLength();
         }
-        // The variable holding the rotation is switched
+        // The property holding the rotation is switched
         this.rotation = this.rotation === "ver" ? "hor":"ver";
+
         // The length of the ship is added again in this for loop
         while(this.shipParts.length < shipLength)
         {
@@ -254,6 +278,7 @@ export default class MovingShips extends Ship
                     
                 }
                 catch{continue;}
+                // The shade of the cell is changed
                 cell.showCell();
             }
         }
@@ -283,32 +308,14 @@ export default class MovingShips extends Ship
                             
             }
             catch{continue;}
+            // The shade of the cell is changed
             cell.showCell();  
         }
-        // for(let i = 0; i < this.board.height; i++)
-        // {
-        //     let line = i + "|";
-        //     for(let j = 0; j < this.board.width; j++)
-        //     {
-        //         if(this.board.grid[i][j].borders.length > 0)
-        //         {
-        //             //line += this.board.grid[i][j].borders.length   + "|";
-        //             line +=  "X|"
-        //             // line += " |"
-        //         }
-        //         else if(this.board.grid[i][j].ships.length > 0)
-        //         {
-        //             line += "O|"
-        //         }
-        //         else{line += " |"}
-        //     }
-        //     console.log(line)
-        // }
-        // console.log("end");
     }
 
     destroy()
     {
+        // The cells the ship is in are marked as empty and all the parts are destroyed
         this.UpdateShipCells(true);
         this.shipParts.forEach(part => part.destroy());
         const index = this.board.ships.indexOf(this);
@@ -317,6 +324,7 @@ export default class MovingShips extends Ship
 
     checkValidCell(coords)
     {
+        // This checks if the cell is on the grid and if it borders or contains a ship
         try
         {
             const cell = this.board.grid[coords.y][coords.x];

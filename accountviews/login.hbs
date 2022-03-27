@@ -57,6 +57,7 @@
       <link rel="shortcut icon" type="image/jpg" href="src/assets/favicon.png"/>
       </head>
       <body>
+        <!-- Navbar allows navigation between pages -->
         <nav>
           <ul id = "navbar">
             <li>
@@ -70,6 +71,7 @@
           </ul>
         </nav>
 
+        <!-- The form for login sends a post request to /auth/login for validation-->
         <form action="/auth/login" method="post">
             <h2>Log in</h2>
             <label for="username">Username</label>
@@ -78,6 +80,7 @@
             <input type="password" id="password" style="width: 200px;" name="password">
             <br>
             <input type = "submit" id="submit" value="Log in">
+            <!-- A message is displayed if the user has entered a invalid username or password -->
             {{#if message}}
               <h4>{{message}}</h4>
             {{/if}}

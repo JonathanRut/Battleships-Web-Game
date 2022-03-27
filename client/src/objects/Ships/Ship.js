@@ -1,5 +1,5 @@
 
-
+// This is a default class for a ship 
 export default class Ship
 {    
     constructor(length, origin, properties, board)

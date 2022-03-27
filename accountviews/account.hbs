@@ -83,6 +83,7 @@
       </head>
       <body>
         <nav>
+          <!-- The navbar allows navigation between pages-->
           <ul id = "navbar">
             <li>
               <a href="/">Battleships</a>
@@ -97,6 +98,7 @@
 
         <div id="playerstats">
             <h1>{{username}}'s Account<h1></h1>
+            <!-- General stats for the player are displayed in a list-->
             <h2>Player's stats:</h2>
             <ul>
                 <li>Leaderboard Position: {{LeaderboardPlacement}}</li>
@@ -110,6 +112,8 @@
                 <li>Date Joined: {{DateJoined}}</li>
             </ul>
             <br>
+
+            <!-- The leaderboard displays the players in the top 10 positions for wins in a table -->
             <h2>Leaderboard</h2>
             <table>
               <thead>
@@ -128,6 +132,8 @@
               </tbody>
             </table>
 
+            <!-- The previous 15 games are displayed -->
+            <!-- each game has stats which are displayed in a table -->
             <h2>Previous Games</h2>
             {{#each games}}
               <div id = "game">
@@ -173,6 +179,7 @@
                 <p>Game lasted: {{#if this.DurationOfGame}}{{this.DurationOfGame}} minutes and {{/if}}{{DurationOfGameSec}} seconds</p>
               </div>
               <br>
+            <!-- If there are no games a message is displayed -->
             {{else}}
             <p>No stored games</p>
             <p>Go play some games</p>

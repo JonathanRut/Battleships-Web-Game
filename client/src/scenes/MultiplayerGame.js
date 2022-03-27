@@ -10,24 +10,30 @@ export default class MultiplayerGame extends MainGame
     create(settings)
     {
         super.create(settings);
+        // Sockets are added to properties that require access
         this.player2.socket = settings.socket;
         this.form.socket = settings.socket
         this.socket = settings.socket;
+
+        // The opponent id is stored and the form is given access to the scene
         this.OpponentID = settings.OpponentID
         this.form.scene = this
         this.trueP1 = settings.justHit;
 
+        // Text on the scene and player 1 are found
         const player1 = this.player1
         const player1Text = this.player1Text
         const turnText = this.turn
 
-
+        // Player 2's name is set
         this.player2.name = settings.opponentName
         this.player2Text.text =  this.player2.name + "'s Board"
 
+        // A request is made for player 1's name
         settings.socket.emit('getName')
         settings.socket.on('setName',function(gamename)
         {
+            // The player 1 name is set in the scene
             player1.name = gamename
             player1Text.text = gamename + "'s Board"
             turnText.text = settings.justHit ? gamename + "'s turn":settings.opponentName + "'s turn"
@@ -37,9 +43,14 @@ export default class MultiplayerGame extends MainGame
                 })
         })
 
+        // Who goes first is set
         this.player1.ownBoard.justHit = settings.justHit;
         this.player2.ownBoard.justHit = !settings.justHit;
+
+
         settings.socket.on('Disconnect', ()=>{
+            // A listener is added if opponent disconnects
+            // It stops the game and adds a message telling to user that their opponent disconnected
             this.player2.ownBoard.grid.forEach(row => 
                 {
                     row.forEach(cell => 
@@ -59,10 +70,13 @@ export default class MultiplayerGame extends MainGame
             newMessage.textContent = this.player2.name + " Disconnected!";
             messages.appendChild(newMessage);
             messages.scrollTo(0,messages.scrollHeight);   
-                
+            
+            // The server is told the game is finished and the player can play again
             this.playAgain.show();
             this.socket.emit('game finished')
         })
+
+        // A reference to the opponent id and socket are added to player 2's cells
         this.player2.ownBoard.grid.forEach(row => 
             {
                 row.forEach(cell => 
@@ -71,6 +85,8 @@ export default class MultiplayerGame extends MainGame
                         cell.OpponentID = settings.OpponentID;
                     })
             })
+
+        // A listener for when the opponent messages is added
         this.player2.socket.on('game message', function(message)
         {
             const messages = document.getElementById('messages');
@@ -79,6 +95,8 @@ export default class MultiplayerGame extends MainGame
             messages.appendChild(newMessage);
             messages.scrollTo(0,messages.scrollHeight);
         })
+
+        // Player 2's ships are given player 2's name for when the sink
         this.player2.ownBoard.ships.forEach(ship =>
             {
                 ship.owner = this.player2.name
@@ -87,6 +105,7 @@ export default class MultiplayerGame extends MainGame
 
     submitMessage(e)
     {
+        // When the player submits a message the messages is added to the chat box and the message is sent to the server
         e.preventDefault();
         const messages = document.getElementById('messages');
         const input = document.getElementById('input');
@@ -102,6 +121,7 @@ export default class MultiplayerGame extends MainGame
     {
         if(player.checkWin())
         {   
+            // The same ending game procedure is used from main game 
             player.endTurn();
             opponent.endTurn();
             player.startTurn = ()=>{};
@@ -128,6 +148,7 @@ export default class MultiplayerGame extends MainGame
                     }
                 });
             });
+            // Except in this end game function the records for the game are emitted to the server 
             if(this.trueP1)
             {
                 console.log('Game record inserted')

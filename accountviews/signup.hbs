@@ -53,10 +53,12 @@
           }
     
       </style>
+      <!-- A title and icon is given to the page-->
       <title>Sign Up</title>
       <link rel="shortcut icon" type="image/jpg" href="src/assets/favicon.png"/>
       </head>
       <body>
+        <!-- A nav bar allows navigation between pages-->
         <nav>
           <ul id = "navbar">
             <li>
@@ -70,6 +72,7 @@
           </ul>
         </nav>
 
+        <!-- A form is made for signing up which on submit sends a post request to /auth/signup for validation-->
         <form action="/auth/signup" method="post">
             <h2>Sign up</h2>
             <label for="username">Username</label>
@@ -80,6 +83,7 @@
             <input type="password" id="confirmPassowrd" style="width: 200px;" name="confirmPassowrd">
             <br>
             <input type = "submit" id="submit" value="Sign up">
+            <!-- This displays a message if the user have mistyped their password-->
             {{#if message}}
               <h4>{{message}}</h4>
             {{/if}}

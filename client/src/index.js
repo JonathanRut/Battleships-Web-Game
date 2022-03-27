@@ -5,6 +5,8 @@ import MultiFleetPlace from './scenes/MultiFleetPlace.js';
 import MainGame from './scenes/MainGame.js';
 import MultiplayerGame from './scenes/MultiplayerGame.js'
 
+
+// The config for the game is set up
 const config = {
     type: Phaser.AUTO,
     parent: 'phaser-game',
@@ -14,6 +16,7 @@ const config = {
     dom: {
         createContainer: true
     },
+    // Scenes for the game are defined
     scene: [StartScreen,SingleFleetPlace,MultiFleetPlace,MainGame,MultiplayerGame]
 }
 
