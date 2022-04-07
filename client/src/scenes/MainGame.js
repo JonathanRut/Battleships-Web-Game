@@ -168,11 +168,14 @@ export default class MainGame extends Phaser.Scene
         // The message submitted is added to the list of other messages
         const messages = document.getElementById('messages');
         const input = document.getElementById('input');
-        var newMessage = document.createElement('li');
-        newMessage.textContent = this.username + ": " + input.value;
-        messages.appendChild(newMessage);
-        messages.scrollTo(0,messages.scrollHeight);
-        input.value = "";
+        if(input.value)
+        {
+            let newMessage = document.createElement('li');
+            newMessage.textContent = this.username + ": " + input.value;
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);
+            input.value = "";
+        }
     }
 
     // This function checks if a player has won

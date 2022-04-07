@@ -89,6 +89,9 @@ export default class SingleFleetPlace extends FleetPlace
                     this.playerSelection.x -= 30;
                 }
             }
+            // The validation for the ship form is changed for new columns
+            this.shipForm.getChildByName("length").setAttribute("max",this.board.width >= this.board.height ? this.board.width:this.board.height);
+            this.shipForm.getChildByName("column").setAttribute("pattern","[a-"+letters[this.board.width-1]+"A-"+letters[this.board.width-1].toUpperCase()+"]{1}");
         }
 
         const boardRows = document.getElementById('boardRows');
@@ -119,7 +122,10 @@ export default class SingleFleetPlace extends FleetPlace
                     this.randomiseButton.text.y -= 30;
                     this.game.scale.resize(this.game.scale.width,this.game.scale.height - 30);
                 }
-            }            
+            }           
+            // The validation for ship form is changed for new rows
+            this.shipForm.getChildByName("length").setAttribute("max",this.board.width >= this.board.height ? this.board.width:this.board.height);
+            this.shipForm.getChildByName("row").setAttribute("max",this.board.height);
         }
 
         // 2 drop down selection boxes are added to the scene to pick player 1 and 2

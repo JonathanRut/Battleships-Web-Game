@@ -44,11 +44,7 @@ export default class Player
                 won = false;
             }
         });
-        if(won)
-        {
-            return true;
-        }
-        return false;
+        return won
     }
 }
 

@@ -64,14 +64,16 @@ export default class MultiplayerGame extends MainGame
             this.player1.endTurn()
             this.player1.startTurn = ()=>{};
             this.player2.startTurn = ()=>{};
-            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, this.player2.name + " Disconnected!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
+            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 120, this.player2.name, {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
+            this.add.text(this.player1.ownBoard.width * 30 + 400, this.player1.ownBoard.height * 30 + 168,"Disconnected!", {fontFamily:'Arial' ,fontSize:'48px', fill:'#000000'}).setOrigin(0.5,0.5);
+
             const messages = document.getElementById('messages');
             var newMessage = document.createElement('li');
             newMessage.textContent = this.player2.name + " Disconnected!";
             messages.appendChild(newMessage);
             messages.scrollTo(0,messages.scrollHeight);   
             
-            // The server is told the game is finished and the player can play again
+            // The server is told the game has finished and the player can play again
             this.playAgain.show();
             this.socket.emit('game finished')
         })
@@ -109,12 +111,15 @@ export default class MultiplayerGame extends MainGame
         e.preventDefault();
         const messages = document.getElementById('messages');
         const input = document.getElementById('input');
-        var newMessage = document.createElement('li');
-        newMessage.textContent = this.scene.player1.name + ": " + input.value;
-        messages.appendChild(newMessage);
-        messages.scrollTo(0,messages.scrollHeight);
-        this.socket.emit('game message', input.value);
-        input.value = "";
+        let newMessage = document.createElement('li');
+        if(input.value)
+        {
+            newMessage.textContent = this.scene.player1.name + ": " + input.value;
+            messages.appendChild(newMessage);
+            messages.scrollTo(0,messages.scrollHeight);
+            this.socket.emit('game message', input.value);
+            input.value = ""
+        }
     }
 
     checkWin(player,opponent)

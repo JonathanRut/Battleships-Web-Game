@@ -199,7 +199,6 @@ export default class MovingShips extends Ship
             if(!this.AddLength())
             {
                 this.Rotate();
-                this.AddLength();
             }
         }
         // Finally every ship on the board is updated to avoid collisions

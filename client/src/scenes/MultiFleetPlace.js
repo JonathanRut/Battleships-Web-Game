@@ -23,7 +23,9 @@ export default class MultiFleetPlace extends FleetPlace
     {
         const scene = this.scene
         // When the start button is pressed a message for searching for a player is made and the scene is stopped
-        this.scene.add.text(this.container.x, this.container.y + 60, "Searching for a Player", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5);
+        this.scene.add.text(this.container.x, this.container.y + 60, "Searching for", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5);
+        this.scene.add.text(this.container.x, this.container.y + 78, "a Player", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5);
+
         this.scene.scene.pause();
 
         // A connection is made to the server and a message is sent telling the server they are searching for an opponent

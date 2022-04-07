@@ -36,7 +36,7 @@ export default class FleetPlace extends Phaser.Scene{
         },this);
 
         // A start button is created
-        container = this.add.rectangle(this.board.origin.x + this.board.width * 30 + 85, this.board.origin.y + 30 * this.board.height - 30,100,30,0xffffff).setStrokeStyle(2,0x000000);
+        container = this.add.rectangle(this.board.origin.x + this.board.width * 30 + 85, this.board.origin.y + 30 * this.board.height - 80,100,30,0xffffff).setStrokeStyle(2,0x000000);
         text = this.add.text(container.x, container.y,"Start", {fontFamily:'Arial' ,fontSize:'18px', fill:'#000000'}).setOrigin(0.5,0.5)
         this.startButton = new phaserButton(container,text,this.onStart,this)
 
